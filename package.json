@@ -6,12 +6,13 @@
     "packages/*"
   ],
   "scripts": {
-    "start:backend": "npm run start:dev --workspace=apps/backend",
-    "db:generate": "npx prisma generate --workspace=@hr-dash/shared",
-    "db:migrate": "npx prisma migrate dev --workspace=@hr-dash/shared"
+    "db:migrate": "npm run migration:up --workspace=@hr-dash/shared",
+    "db:generate": "npm run migration:create --workspace=@hr-dash/shared",
+    "db:blank": "npm run migration:blank --workspace=@hr-dash/shared",
+    "dev:backend": "npm run start:dev --workspace=apps/backend",
+    "dev:frontend": "npm run dev --workspace=apps/frontend"
   },
   "devDependencies": {
-    "@types/node": "^26.2.0",
-    "prisma": "^7.9.1"
+    "@types/node": "^26.2.0"
   }
 }
