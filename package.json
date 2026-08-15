@@ -1,0 +1,17 @@
+{
+  "name": "hr-dash",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "start:backend": "npm run start:dev --workspace=apps/backend",
+    "db:generate": "npx prisma generate --workspace=@hr-dash/shared",
+    "db:migrate": "npx prisma migrate dev --workspace=@hr-dash/shared"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "prisma": "^7.9.1"
+  }
+}

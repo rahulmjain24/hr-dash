@@ -1,2 +1,66 @@
-# Ignore local database and storage files
+# =========================
+# Infrastructure & Database
+# =========================
+# Ignore the local Docker bind mounts (Postgres and MinIO data)
 .data/
+
+# =========================
+# Dependencies
+# =========================
+node_modules/
+# If you use npm workspaces, there is a root node_modules and potentially nested ones. 
+# The above line catches all of them.
+
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# =========================
+# Build Outputs
+# =========================
+# NestJS (Backend) build output
+/apps/backend/dist/
+
+# Next.js (Frontend) build output
+/apps/frontend/.next/
+/apps/frontend/out/
+/apps/frontend/build/
+
+# Shared package build output and Prisma generated client
+/packages/shared/dist/
+/packages/shared/src/generated/
+
+# =========================
+# Logs and Debugging
+# =========================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# =========================
+# OS & Editor Files
+# =========================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# =========================
+# AI Assistants & Workspaces
+# =========================
+.agents/
+.claude/
+.windsurf/
