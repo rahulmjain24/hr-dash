@@ -1,11 +1,13 @@
 import { defineConfig, PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { Migrator } from '@mikro-orm/migrations';
-import * as dotenv from 'dotenv';
-import * as path from 'path';
 import { Department } from 'src/entities/department.entity';
 import { BaseUUIDEntity } from 'src/entities/base.entity';
+import { ConfigModule } from '@nestjs/config';
 
-dotenv.config({ path: path.resolve(process.cwd(), '../../.env') });
+ConfigModule.forRoot({
+  isGlobal: true,
+  envFilePath: '../../.env',
+});
 
 export default defineConfig({
   entities: [Department, BaseUUIDEntity],
