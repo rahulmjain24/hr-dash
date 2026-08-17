@@ -1,9 +1,9 @@
 import { PrimaryKey, Property } from '@mikro-orm/decorators/legacy';
-import type { Opt } from '@mikro-orm/core';
+import { type Opt, BaseEntity } from '@mikro-orm/core';
 
-export abstract class BaseEntity {
+export abstract class BaseUUIDEntity extends BaseEntity {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
-  id: string;
+  id!: string;
 
   @Property({ type: 'datetime' })
   createdAt: Date & Opt = new Date();

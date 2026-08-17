@@ -1,7 +1,6 @@
 import { Entity, Property, Enum } from '@mikro-orm/decorators/legacy';
-import { BaseEntity } from './base.entity.js';
+import { BaseUUIDEntity } from './base.entity.js';
 
-// Export this so your frontend and backend can both use it!
 export enum DepartmentName {
   ENGINEERING = 'ENGINEERING',
   HR = 'HR',
@@ -11,9 +10,9 @@ export enum DepartmentName {
 }
 
 @Entity({ tableName: 'tbl_departments' })
-export class Department extends BaseEntity {
+export class Department extends BaseUUIDEntity {
   @Enum(() => DepartmentName)
-  name: DepartmentName;
+  name!: DepartmentName;
 
   @Property({ type: 'string', nullable: true })
   description?: string;
