@@ -6,9 +6,9 @@
     "packages/*"
   ],
   "scripts": {
-    "db:migrate": "npm run migration:up --workspace=@hr-dash/shared",
-    "db:generate": "npm run migration:create --workspace=@hr-dash/shared",
-    "db:blank": "npm run migration:blank --workspace=@hr-dash/shared",
+    "db:migrate": "npm run migration:up --workspace=apps/backend",
+    "db:generate": "npm run migration:create --workspace=apps/backend",
+    "db:blank": "npm run migration:blank --workspace=apps/backend",
     "dev:backend": "npm run start:dev --workspace=apps/backend",
     "dev:frontend": "npm run dev --workspace=apps/frontend"
   },

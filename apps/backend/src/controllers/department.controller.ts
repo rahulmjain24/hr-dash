@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { Department, type DepartmentName } from '../entities/department.entity';
+import { DepartmentEntity } from '../entities/department.entity';
 import { DepartmentService } from '../services/department.service';
 import { BaseController } from './base.controller';
 import { CreateDepartmentDto, UpdateDescriptionDepartmentDto } from 'src/dtos/department.dto';
@@ -9,7 +9,7 @@ import { Role, Roles } from 'src/decorators/roles.decorator';
 
 @Controller('departments')
 @UseGuards(JwtAuthGuard, RolesGuard)
-export class DepartmentController extends BaseController<Department> {
+export class DepartmentController extends BaseController<DepartmentEntity> {
   constructor(private readonly departmentService: DepartmentService) {
     super(departmentService);
   }

@@ -1,9 +1,9 @@
 import { IsEnum, IsString, IsOptional, Length } from 'class-validator';
-import { DepartmentName } from 'src/entities/department.entity';
+import { DepartmentNameEnum } from 'src/entities/department.entity';
 
 export class CreateDepartmentDto {
-  @IsEnum(DepartmentName, { message: 'Must be a valid department name' })
-  name!: DepartmentName;
+  @IsEnum(DepartmentNameEnum, { message: 'Must be a valid department name' })
+  name!: DepartmentNameEnum;
 
   @IsString()
   @IsOptional()

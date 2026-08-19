@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/postgresql';
-import { Department, type DepartmentName } from '../entities/department.entity';
+import { DepartmentEntity, type DepartmentNameEnum } from '../entities/department.entity';
 import { BaseRepository } from './base.repository';
 
 @Injectable()
-export class DepartmentRepository extends BaseRepository<Department> {
+export class DepartmentRepository extends BaseRepository<DepartmentEntity> {
     constructor(em: EntityManager) {
-        super(em, Department);
+        super(em, DepartmentEntity);
     }
 
-    async findByName(name: DepartmentName): Promise<Department | null> {
+    async findByName(name: DepartmentNameEnum): Promise<DepartmentEntity | null> {
         return this.findOne({ name });
     }
 }

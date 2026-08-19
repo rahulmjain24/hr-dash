@@ -5,9 +5,13 @@ export abstract class BaseUUIDEntity extends BaseEntity {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 
-  @Property({ type: 'datetime' })
-  createdAt: Date & Opt = new Date();
+  @Property({ type: 'datetime', defaultRaw: 'current_timestamp' })
+  createdAt!: Date;
 
-  @Property({ type: 'datetime', onUpdate: () => new Date() })
-  updatedAt: Date & Opt = new Date();
+  @Property({
+    type: 'datetime',
+    defaultRaw: 'current_timestamp',
+    onUpdate: () => new Date()
+  })
+  updatedAt!: Date;
 }
