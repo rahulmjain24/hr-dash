@@ -10,7 +10,7 @@
     "db:generate": "npm run migration:create --workspace=apps/backend",
     "db:blank": "npm run migration:blank --workspace=apps/backend",
     "dev:backend": "npm run start:dev --workspace=apps/backend",
-    "dev:frontend": "npm run dev --workspace=apps/frontend"
+    "dev:frontend-hr": "npm run dev --workspace=apps/frontend-hr"
   },
   "devDependencies": {
     "@types/node": "^26.2.0"
