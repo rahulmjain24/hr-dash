@@ -1,12 +1,9 @@
-// apps/frontend-hr/src/app/login/page.tsx
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api'; 
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -19,10 +16,9 @@ export default function LoginPage() {
 
     try {
       await api.post('/auth/login', { email, password });
-      router.push('/');
+      window.location.replace('/');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Invalid email or password');
-    } finally {
       setIsLoading(false);
     }
   };

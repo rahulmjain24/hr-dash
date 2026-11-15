@@ -5,6 +5,8 @@ import * as path from 'path';
 import { DepartmentEntity } from './src/entities/department.entity';
 import { BaseUUIDEntity } from './src/entities/base.entity';
 import { UserEntity } from './src/entities/user.entity';
+import { JobListing } from './src/entities/job-listing.entity';
+import { ApplicationForm } from './src/entities/application-form.entity';
 
 dotenv.config({ path: path.resolve(process.cwd(), '../../.env') });
 
@@ -13,6 +15,8 @@ export default defineConfig({
     BaseUUIDEntity,
     DepartmentEntity,
     UserEntity,
+    JobListing,
+    ApplicationForm,
   ],
   driver: PostgreSqlDriver,
   host: process.env.DB_HOST,

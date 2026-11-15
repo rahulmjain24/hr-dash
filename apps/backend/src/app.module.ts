@@ -5,6 +5,8 @@ import config from '../mikro-orm.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './modules/user.module';
+import { JobListingModule } from './modules/job-listing.module';
+import { ApplicationFormModule } from './modules/application-form.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { UserModule } from './modules/user.module';
     DepartmentModule,
     AuthModule,
     UserModule,
+    JobListingModule,
+    ApplicationFormModule,
   ],
   controllers: [],
   providers: [],

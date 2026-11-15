@@ -17,7 +17,7 @@ services:
       - hr_network
 
   minio:
-    image: minio/minio:latest
+    image: pgsty/silo:latest
     container_name: hr_minio
     restart: unless-stopped
     environment:
