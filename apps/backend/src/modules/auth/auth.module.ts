@@ -7,6 +7,9 @@ import { AuthController } from 'src/controllers/auth.controller';
 import { AuthService } from 'src/services/auth.service';
 import { UserModule } from '../user.module';
 import { EnvironmentVariables } from 'src/config/env.validation';
+import { PasswordResetService } from 'src/services/password-reset.service';
+import { MailService } from 'src/services/mail.service';
+import { PasswordResetTokenRepository } from 'src/repositories/password-reset-token.repository';
 
 @Module({
   imports: [
@@ -22,7 +25,13 @@ import { EnvironmentVariables } from 'src/config/env.validation';
     UserModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    PasswordResetService,
+    MailService,
+    PasswordResetTokenRepository,
+  ],
   exports: [JwtModule],
 })
 export class AuthModule {}

@@ -11,7 +11,7 @@ export class UserEntity extends BaseUUIDEntity {
   @Property({ type: 'string', unique: true, index: true })
   email!: string;
 
-  @Property({ type: 'string' })
+  @Property({ type: 'string', hidden: true })
   password!: string;
 
   @Property({ type: 'string' })

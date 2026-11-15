@@ -7,6 +7,7 @@ import { BaseUUIDEntity } from './src/entities/base.entity';
 import { UserEntity } from './src/entities/user.entity';
 import { JobListing } from './src/entities/job-listing.entity';
 import { ApplicationForm } from './src/entities/application-form.entity';
+import { PasswordResetToken } from './src/entities/password-reset-token.entity';
 
 dotenv.config({ path: path.resolve(process.cwd(), '../../.env') });
 
@@ -17,6 +18,7 @@ export default defineConfig({
     UserEntity,
     JobListing,
     ApplicationForm,
+    PasswordResetToken,
   ],
   driver: PostgreSqlDriver,
   host: process.env.DB_HOST,

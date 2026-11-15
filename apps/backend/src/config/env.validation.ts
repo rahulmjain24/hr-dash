@@ -55,6 +55,34 @@ export class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   AUTH_COOKIE_NAME!: string;
+
+  // Base URL of the HR frontend, used to build links in emails
+  @IsString()
+  @IsOptional()
+  FRONTEND_URL: string = 'http://localhost:3001';
+
+  // SMTP is optional: without SMTP_HOST, emails are written to the server log
+  @IsString()
+  @IsOptional()
+  SMTP_HOST?: string;
+
+  @IsInt()
+  @Min(0)
+  @Max(65535)
+  @IsOptional()
+  SMTP_PORT: number = 587;
+
+  @IsString()
+  @IsOptional()
+  SMTP_USER?: string;
+
+  @IsString()
+  @IsOptional()
+  SMTP_PASSWORD?: string;
+
+  @IsString()
+  @IsOptional()
+  MAIL_FROM: string = 'HR Portal <no-reply@localhost>';
 }
 
 export function validateEnv(config: Record<string, unknown>): EnvironmentVariables {
