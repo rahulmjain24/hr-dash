@@ -1,4 +1,3 @@
-// apps/frontend-hr/src/app/register/page.tsx
 'use client';
 
 import { useState } from 'react';
@@ -29,13 +28,11 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      // Calls the NestJS backend and automatically sets the HTTP-Only cookie
       const response = await api.post('/auth/register', { name, email, password });
       
       localStorage.setItem('user', JSON.stringify(response.data.user));
-      router.push('/'); // Redirect to dashboard
+      router.push('/');
     } catch (err: any) {
-      // Extract the error message from NestJS ValidationPipe or ConflictException
       const apiError = err.response?.data?.message;
       setError(Array.isArray(apiError) ? apiError[0] : apiError || 'Registration failed');
     } finally {
