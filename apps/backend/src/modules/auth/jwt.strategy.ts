@@ -1,23 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-jwt';
 import { Request } from 'express';
-
-const cookieExtractor = (req: Request) => {
-  let token = null;
-  if (req && req.cookies) {
-    token = req.cookies[process.env.AUTH_COOKIE_NAME as string];
-  }
-  return token;
-};
+import { EnvironmentVariables } from 'src/config/env.validation';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(configService: ConfigService<EnvironmentVariables, true>) {
+    const cookieName = configService.get('AUTH_COOKIE_NAME', { infer: true });
+
     super({
-      jwtFromRequest: cookieExtractor,
+      jwtFromRequest: (req: Request) => req?.cookies?.[cookieName] ?? null,
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET || 'super-secret-fallback-key',
+      secretOrKey: configService.get('JWT_SECRET', { infer: true }),
     });
   }
 

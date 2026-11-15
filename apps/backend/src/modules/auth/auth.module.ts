@@ -6,6 +6,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from 'src/controllers/auth.controller';
 import { AuthService } from 'src/services/auth.service';
 import { UserModule } from '../user.module';
+import { EnvironmentVariables } from 'src/config/env.validation';
 
 @Module({
   imports: [
@@ -13,8 +14,8 @@ import { UserModule } from '../user.module';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
+      useFactory: (configService: ConfigService<EnvironmentVariables, true>) => ({
+        secret: configService.get('JWT_SECRET', { infer: true }),
         signOptions: { expiresIn: '1d' },
       }),
     }),

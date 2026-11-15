@@ -28,9 +28,9 @@ This project is a comprehensive Human Resources and Applicant Tracking System de
 - [x] Monorepo workspace setup
 - [x] Backend API architecture
 - [x] Authentication logic (JWT & RBAC)
-- [ ] Database migrations
+- [x] Database migrations
+- [x] User authentication flow
 - [ ] Frontend dashboard (Next.js)
-- [ ] User authentication flow
 - [ ] Job postings & department management
 - [ ] Candidate tracking & applications
 - [ ] Docker containerization

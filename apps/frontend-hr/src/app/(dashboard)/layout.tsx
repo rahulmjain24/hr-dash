@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import LogoutButton from '@/components/LogoutButton';
 
 export default function DashboardLayout({
   children,
@@ -19,7 +20,13 @@ export default function DashboardLayout({
           <Link href="/departments" className="block p-2 hover:bg-slate-800 rounded">
             Departments
           </Link>
+          <Link href="/users/create" className="block p-2 hover:bg-slate-800 rounded">
+            Create User
+          </Link>
         </nav>
+        <div className="p-4 border-t border-slate-800">
+          <LogoutButton />
+        </div>
       </aside>
 
       {/* Main Content Area */}
