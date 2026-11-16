@@ -11,7 +11,8 @@
     "db:blank": "npm run migration:blank --workspace=apps/backend",
     "db:down": "npm run migration:down --workspace=apps/backend",
     "dev:backend": "npm run start:dev --workspace=apps/backend",
-    "dev:frontend-hr": "npm run dev --workspace=apps/frontend-hr"
+    "dev:frontend-hr": "npm run dev --workspace=apps/frontend-hr",
+    "dev:frontend-application": "npm run dev --workspace=apps/frontend-application"
   },
   "devDependencies": {
     "@types/node": "^22.0.0"

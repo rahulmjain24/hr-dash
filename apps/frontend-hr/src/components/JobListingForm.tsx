@@ -28,7 +28,7 @@ import {
   textareaClass,
 } from '@/components/ui';
 
-const DESCRIPTION_MAX_LENGTH = 255;
+const DESCRIPTION_MAX_LENGTH = 10_000;
 
 /** Create form when `listing` is omitted, edit form otherwise. */
 export default function JobListingForm({ listing }: { listing?: JobListing }) {
@@ -113,7 +113,7 @@ export default function JobListingForm({ listing }: { listing?: JobListing }) {
             className={inputClass}
             placeholder="e.g. Senior Backend Engineer"
             minLength={3}
-            maxLength={255}
+            maxLength={10_000}
             required
             disabled={isLocked}
           />
