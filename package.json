@@ -14,6 +14,6 @@
     "dev:frontend-hr": "npm run dev --workspace=apps/frontend-hr"
   },
   "devDependencies": {
-    "@types/node": "^26.2.0"
+    "@types/node": "^22.0.0"
   }
 }

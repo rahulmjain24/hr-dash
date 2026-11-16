@@ -89,7 +89,6 @@ The system utilizes a relational database structure designed to track the full l
 *   **`tbl_documents`**: Stores metadata and links to physical files in the File Storage (e.g., resumes tied to an `application_id`).
 *   **`tbl_interviews`**: Manages scheduled interviews, linking applications to specific interviewer users, and storing meeting durations and links.
 *   **`tbl_password_reset_tokens`**: Create password reset tokens for users.
-*   
 
 ---
 

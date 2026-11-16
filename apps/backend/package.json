@@ -24,7 +24,6 @@
     "migration:down": "mikro-orm migration:down"
   },
   "dependencies": {
-    "@hr-dash/shared": "^1.0.0",
     "@mikro-orm/cli": "^7.1.11",
     "@mikro-orm/core": "^7.1.11",
     "@mikro-orm/decorators": "^7.1.11",
@@ -61,7 +60,6 @@
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.0.0",
     "@types/passport-jwt": "^4.0.1",
     "@types/pg": "^8.21.0",
     "@types/supertest": "^7.0.0",
