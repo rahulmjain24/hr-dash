@@ -27,10 +27,10 @@ node_modules/
 # NestJS (Backend) build output
 /apps/backend/dist/
 
-# Next.js (Frontend) build output
-/apps/frontend/.next/
-/apps/frontend/out/
-/apps/frontend/build/
+# Next.js (HR frontend) build output
+/apps/frontend-hr/.next/
+/apps/frontend-hr/out/
+/apps/frontend-hr/build/
 
 # Shared package build output and Prisma generated client
 /packages/shared/dist/
