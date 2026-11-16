@@ -5,6 +5,7 @@ import { ApplicationFormRepository } from '../repositories/application-form.repo
 import { JobListingService } from './job-listing.service';
 import type { PaginatedResult } from '../utils/pagination.utils';
 import type { CreateApplicationFormDto, QueryApplicationFormDto, UpdateApplicationFormDto } from '../dtos/application-form.dto';
+import type { SubmitApplicationDto } from '../dtos/public-application.dto';
 
 @Injectable()
 export class ApplicationFormService extends BaseService<ApplicationForm> {
@@ -48,6 +49,25 @@ export class ApplicationFormService extends BaseService<ApplicationForm> {
       status: dto.status ?? JobStatusEnum.APPLIED,
       additionalProperties: dto.additionalProperties,
       submissonDate,
+    });
+  }
+
+  async submitApplication(dto: SubmitApplicationDto): Promise<ApplicationForm> {
+    await this.jobListingService.getOpenListingById(dto.jobId);
+
+    const { jobId, firstName, lastName, email, ...extra } = dto;
+    const additionalProperties = Object.fromEntries(
+      Object.entries(extra).filter(([, value]) => value !== undefined),
+    );
+
+    return this.createApplication({
+      jobId,
+      firstName,
+      lastName,
+      email,
+      additionalProperties: Object.keys(additionalProperties).length
+        ? additionalProperties
+        : undefined,
     });
   }
 

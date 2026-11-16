@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from './base.service';
 import { JobListing } from 'src/entities/job-listing.entity';
 import { JobListingRepository } from 'src/repositories/job-listing.repository';
@@ -57,6 +57,20 @@ export class JobListingService extends BaseService<JobListing> {
     }
 
     return this.update(id, { isActive: false });
+  }
+
+  async getOpenListings(): Promise<JobListing[]> {
+    return this.jobListingRepo.findOpen();
+  }
+
+  async getOpenListingById(id: string): Promise<JobListing> {
+    const listing = await this.jobListingRepo.findOpenById(id);
+    if (!listing) {
+      throw new NotFoundException(
+        'This job listing is not open for applications',
+      );
+    }
+    return listing;
   }
 
   private async assertDepartmentExists(

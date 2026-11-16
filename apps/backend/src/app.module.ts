@@ -8,6 +8,7 @@ import { validateEnv } from './config/env.validation';
 import { UserModule } from './modules/user.module';
 import { JobListingModule } from './modules/job-listing.module';
 import { ApplicationFormModule } from './modules/application-form.module';
+import { PublicModule } from './modules/public.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ApplicationFormModule } from './modules/application-form.module';
     UserModule,
     JobListingModule,
     ApplicationFormModule,
+    PublicModule,
   ],
   controllers: [],
   providers: [],

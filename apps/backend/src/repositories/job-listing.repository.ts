@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/postgresql';
+import type { FilterQuery } from '@mikro-orm/core';
 import { BaseRepository } from './base.repository';
 import { JobListing } from 'src/entities/job-listing.entity';
 
@@ -7,5 +8,30 @@ import { JobListing } from 'src/entities/job-listing.entity';
 export class JobListingRepository extends BaseRepository<JobListing> {
   constructor(em: EntityManager) {
     super(em, JobListing);
+  }
+
+  async findOpen(): Promise<JobListing[]> {
+    return this.find(this.openFilter(), {
+      orderBy: { createdAt: 'DESC', id: 'ASC' },
+    });
+  }
+
+  async findOpenById(id: string): Promise<JobListing | null> {
+    return this.findOne({ $and: [{ id }, this.openFilter()] });
+  }
+
+  private openFilter(): FilterQuery<JobListing> {
+    const now = new Date();
+    const today = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+    );
+
+    return {
+      $and: [
+        { $or: [{ isActive: true }, { isActive: null }] },
+        { $or: [{ startDate: null }, { startDate: { $lte: now } }] },
+        { $or: [{ endDate: null }, { endDate: { $gte: today } }] },
+      ],
+    };
   }
 }
