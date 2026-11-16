@@ -3,7 +3,7 @@ import { BaseUUIDEntity } from './base.entity';
 import { DepartmentNameEnum } from './department.entity';
 
 @Entity({ tableName: 'tbl_job_listings' })
-export class JobListing extends BaseUUIDEntity {
+export class JobListingEntity extends BaseUUIDEntity {
   @Property({ type: 'string' })
   title!: string;
 

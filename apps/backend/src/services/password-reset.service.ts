@@ -5,7 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { UserService } from './user.service';
 import { MailService } from './mail.service';
 import { PasswordResetTokenRepository } from 'src/repositories/password-reset-token.repository';
-import { PasswordResetToken } from 'src/entities/password-reset-token.entity';
+import { PasswordResetTokenEntity } from 'src/entities/password-reset-token.entity';
 import { EnvironmentVariables } from 'src/config/env.validation';
 
 export const RESET_TOKEN_TTL_MINUTES = 30;
@@ -66,7 +66,7 @@ export class PasswordResetService {
     await this.tokenRepo.invalidateForUser(userId);
   }
 
-  private async findUsableOrFail(token: string): Promise<PasswordResetToken> {
+  private async findUsableOrFail(token: string): Promise<PasswordResetTokenEntity> {
     const resetToken = await this.tokenRepo.findUsableByHash(this.hash(token));
     if (!resetToken) {
       throw new BadRequestException('This reset link has expired or was already used');

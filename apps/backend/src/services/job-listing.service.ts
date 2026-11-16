@@ -1,13 +1,13 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from './base.service';
-import { JobListing } from 'src/entities/job-listing.entity';
+import { JobListingEntity } from 'src/entities/job-listing.entity';
 import { JobListingRepository } from 'src/repositories/job-listing.repository';
 import { DepartmentService } from './department.service';
 import type { DepartmentNameEnum } from 'src/entities/department.entity';
 import type { CreateJobListingDto, UpdateJobListingDto } from 'src/dtos/job-listing.dto';
 
 @Injectable()
-export class JobListingService extends BaseService<JobListing> {
+export class JobListingService extends BaseService<JobListingEntity> {
   constructor(
     protected readonly jobListingRepo: JobListingRepository,
     private readonly departmentService: DepartmentService,
@@ -15,7 +15,7 @@ export class JobListingService extends BaseService<JobListing> {
     super(jobListingRepo);
   }
 
-  async createListing(dto: CreateJobListingDto): Promise<JobListing> {
+  async createListing(dto: CreateJobListingDto): Promise<JobListingEntity> {
     await this.assertDepartmentExists(dto.department);
 
     return this.create({ ...dto, isActive: true });
@@ -24,7 +24,7 @@ export class JobListingService extends BaseService<JobListing> {
   async updateListing(
     id: string,
     dto: UpdateJobListingDto,
-  ): Promise<JobListing> {
+  ): Promise<JobListingEntity> {
     if (Object.keys(dto).length === 0) {
       throw new BadRequestException(
         'At least one field must be provided for update',
@@ -46,10 +46,10 @@ export class JobListingService extends BaseService<JobListing> {
       throw new BadRequestException('endDate must be on or after startDate');
     }
 
-    return this.update(id, dto as Partial<JobListing>);
+    return this.update(id, dto as Partial<JobListingEntity>);
   }
 
-  async setInactive(id: string): Promise<JobListing> {
+  async setInactive(id: string): Promise<JobListingEntity> {
     const existing = await this.getById(id);
 
     if (existing.isActive === false) {
@@ -59,11 +59,11 @@ export class JobListingService extends BaseService<JobListing> {
     return this.update(id, { isActive: false });
   }
 
-  async getOpenListings(): Promise<JobListing[]> {
+  async getOpenListings(): Promise<JobListingEntity[]> {
     return this.jobListingRepo.findOpen();
   }
 
-  async getOpenListingById(id: string): Promise<JobListing> {
+  async getOpenListingById(id: string): Promise<JobListingEntity> {
     const listing = await this.jobListingRepo.findOpenById(id);
     if (!listing) {
       throw new NotFoundException(

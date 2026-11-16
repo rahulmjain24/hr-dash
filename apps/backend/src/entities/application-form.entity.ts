@@ -1,6 +1,6 @@
 import { Entity, Property, Enum, Unique, ManyToOne } from '@mikro-orm/decorators/legacy';
 import { BaseUUIDEntity } from './base.entity';
-import { JobListing } from './job-listing.entity';
+import { JobListingEntity } from './job-listing.entity';
 
 export enum JobStatusEnum {
   APPLIED = 'APPLIED',
@@ -11,7 +11,7 @@ export enum JobStatusEnum {
 
 @Entity({ tableName: 'tbl_application_forms' })
 @Unique({ properties: ['email', 'job'] })
-export class ApplicationForm extends BaseUUIDEntity {
+export class ApplicationFormEntity extends BaseUUIDEntity {
   @Property({ type: 'string' })
   email!: string;
 
@@ -21,8 +21,8 @@ export class ApplicationForm extends BaseUUIDEntity {
   @Property({ type: 'string' })
   lastName!: string;
 
-  @ManyToOne(() => JobListing, { joinColumn: 'job_id' })
-  job!: JobListing;
+  @ManyToOne(() => JobListingEntity, { joinColumn: 'job_id' })
+  job!: JobListingEntity;
 
   @Enum({ items: () => JobStatusEnum, nullable: true })
   status?: JobStatusEnum;

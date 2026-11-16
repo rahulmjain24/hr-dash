@@ -3,7 +3,7 @@ import { BaseUUIDEntity } from './base.entity';
 import { UserEntity } from './user.entity';
 
 @Entity({ tableName: 'tbl_password_reset_tokens' })
-export class PasswordResetToken extends BaseUUIDEntity {
+export class PasswordResetTokenEntity extends BaseUUIDEntity {
   @ManyToOne(() => UserEntity, { joinColumn: 'user_id', deleteRule: 'cascade' })
   user!: UserEntity;
 

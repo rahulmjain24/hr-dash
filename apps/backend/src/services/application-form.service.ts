@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { BaseService } from './base.service';
-import { ApplicationForm, JobStatusEnum } from '../entities/application-form.entity';
+import { ApplicationFormEntity, JobStatusEnum } from '../entities/application-form.entity';
 import { ApplicationFormRepository } from '../repositories/application-form.repository';
 import { JobListingService } from './job-listing.service';
 import type { PaginatedResult } from '../utils/pagination.utils';
@@ -8,7 +8,7 @@ import type { CreateApplicationFormDto, QueryApplicationFormDto, UpdateApplicati
 import type { SubmitApplicationDto } from '../dtos/public-application.dto';
 
 @Injectable()
-export class ApplicationFormService extends BaseService<ApplicationForm> {
+export class ApplicationFormService extends BaseService<ApplicationFormEntity> {
   constructor(
     protected readonly applicationFormRepo: ApplicationFormRepository,
     private readonly jobListingService: JobListingService,
@@ -18,7 +18,7 @@ export class ApplicationFormService extends BaseService<ApplicationForm> {
 
   async createApplication(
     dto: CreateApplicationFormDto,
-  ): Promise<ApplicationForm> {
+  ): Promise<ApplicationFormEntity> {
     const targetJobId = dto.jobId || dto.job;
     if (!targetJobId) {
       throw new BadRequestException('jobId is required');
@@ -52,7 +52,7 @@ export class ApplicationFormService extends BaseService<ApplicationForm> {
     });
   }
 
-  async submitApplication(dto: SubmitApplicationDto): Promise<ApplicationForm> {
+  async submitApplication(dto: SubmitApplicationDto): Promise<ApplicationFormEntity> {
     await this.jobListingService.getOpenListingById(dto.jobId);
 
     const { jobId, firstName, lastName, email, ...extra } = dto;
@@ -74,7 +74,7 @@ export class ApplicationFormService extends BaseService<ApplicationForm> {
   async updateApplication(
     id: string,
     dto: UpdateApplicationFormDto,
-  ): Promise<ApplicationForm> {
+  ): Promise<ApplicationFormEntity> {
     if (Object.keys(dto).length === 0) {
       throw new BadRequestException(
         'At least one field must be provided for update',
@@ -100,7 +100,7 @@ export class ApplicationFormService extends BaseService<ApplicationForm> {
 
     const submissonDate = dto.submissonDate ?? dto.submissionDate;
 
-    const updatePayload: Partial<ApplicationForm> = {};
+    const updatePayload: Partial<ApplicationFormEntity> = {};
     if (dto.email !== undefined) updatePayload.email = dto.email;
     if (dto.firstName !== undefined) updatePayload.firstName = dto.firstName;
     if (dto.lastName !== undefined) updatePayload.lastName = dto.lastName;
@@ -118,23 +118,23 @@ export class ApplicationFormService extends BaseService<ApplicationForm> {
   async updateStatus(
     id: string,
     status: JobStatusEnum,
-  ): Promise<ApplicationForm> {
+  ): Promise<ApplicationFormEntity> {
     await this.getById(id);
     return this.update(id, { status });
   }
 
-  async findByJobId(jobId: string): Promise<ApplicationForm[]> {
+  async findByJobId(jobId: string): Promise<ApplicationFormEntity[]> {
     await this.jobListingService.getById(jobId);
     return this.applicationFormRepo.findByJobId(jobId);
   }
 
-  async findByStatus(status: JobStatusEnum): Promise<ApplicationForm[]> {
+  async findByStatus(status: JobStatusEnum): Promise<ApplicationFormEntity[]> {
     return this.applicationFormRepo.findByStatus(status);
   }
 
   async findWithFilters(
     filters?: QueryApplicationFormDto,
-  ): Promise<PaginatedResult<ApplicationForm>> {
+  ): Promise<PaginatedResult<ApplicationFormEntity>> {
     if (filters?.jobId) {
       await this.jobListingService.getById(filters.jobId);
     }

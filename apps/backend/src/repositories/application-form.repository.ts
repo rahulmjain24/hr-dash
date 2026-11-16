@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/postgresql';
 import type { FilterQuery } from '@mikro-orm/core';
 import { BaseRepository } from './base.repository';
-import { ApplicationForm, JobStatusEnum } from '../entities/application-form.entity';
+import { ApplicationFormEntity, JobStatusEnum } from '../entities/application-form.entity';
 import { DepartmentNameEnum } from '../entities/department.entity';
 import { endOfExclusive, escapeLike, startOf } from '../utils/query.utils';
 import {
@@ -23,24 +23,24 @@ export interface ApplicationFormFilters {
 }
 
 @Injectable()
-export class ApplicationFormRepository extends BaseRepository<ApplicationForm> {
+export class ApplicationFormRepository extends BaseRepository<ApplicationFormEntity> {
   constructor(em: EntityManager) {
-    super(em, ApplicationForm);
+    super(em, ApplicationFormEntity);
   }
 
-  override async getAll(): Promise<ApplicationForm[]> {
+  override async getAll(): Promise<ApplicationFormEntity[]> {
     return this.find({}, { populate: ['job'] });
   }
 
-  override async findById(id: string): Promise<ApplicationForm | null> {
-    return this.findOne({ id } as FilterQuery<ApplicationForm>, {
+  override async findById(id: string): Promise<ApplicationFormEntity | null> {
+    return this.findOne({ id } as FilterQuery<ApplicationFormEntity>, {
       populate: ['job'],
     });
   }
 
-  async findByJobId(jobId: string): Promise<ApplicationForm[]> {
+  async findByJobId(jobId: string): Promise<ApplicationFormEntity[]> {
     return this.find(
-      { job: jobId } as FilterQuery<ApplicationForm>,
+      { job: jobId } as FilterQuery<ApplicationFormEntity>,
       { populate: ['job'] },
     );
   }
@@ -48,17 +48,17 @@ export class ApplicationFormRepository extends BaseRepository<ApplicationForm> {
   async findByEmailAndJobId(
     email: string,
     jobId: string,
-  ): Promise<ApplicationForm | null> {
-    return this.findOne({ email, job: jobId } as FilterQuery<ApplicationForm>);
+  ): Promise<ApplicationFormEntity | null> {
+    return this.findOne({ email, job: jobId } as FilterQuery<ApplicationFormEntity>);
   }
 
-  async findByStatus(status: JobStatusEnum): Promise<ApplicationForm[]> {
+  async findByStatus(status: JobStatusEnum): Promise<ApplicationFormEntity[]> {
     return this.find({ status }, { populate: ['job'] });
   }
 
   async findByFilters(
     filters: ApplicationFormFilters & PaginationParams,
-  ): Promise<PaginatedResult<ApplicationForm>> {
+  ): Promise<PaginatedResult<ApplicationFormEntity>> {
     const conditions: Record<string, unknown>[] = [];
 
     if (filters.search) {
@@ -99,7 +99,7 @@ export class ApplicationFormRepository extends BaseRepository<ApplicationForm> {
 
     const where = (
       conditions.length ? { $and: conditions } : {}
-    ) as FilterQuery<ApplicationForm>;
+    ) as FilterQuery<ApplicationFormEntity>;
 
     const { page, limit, offset } = resolvePagination(filters);
     const [rows, total] = await this.findAndCount(where, {
