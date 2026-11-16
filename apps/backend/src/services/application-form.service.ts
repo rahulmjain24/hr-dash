@@ -55,7 +55,7 @@ export class ApplicationFormService extends BaseService<ApplicationFormEntity> {
   async submitApplication(dto: SubmitApplicationDto): Promise<ApplicationFormEntity> {
     await this.jobListingService.getOpenListingById(dto.jobId);
 
-    const { jobId, firstName, lastName, email, ...extra } = dto;
+    const { jobId, firstName, lastName, email, documentIds, ...extra } = dto;
     const additionalProperties = Object.fromEntries(
       Object.entries(extra).filter(([, value]) => value !== undefined),
     );

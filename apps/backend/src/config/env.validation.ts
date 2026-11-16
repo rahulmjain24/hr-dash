@@ -1,5 +1,5 @@
-import { plainToInstance } from 'class-transformer';
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min, validateSync } from 'class-validator';
+import { plainToInstance, Transform } from 'class-transformer';
+import { IsBoolean, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min, validateSync } from 'class-validator';
 
 export enum NodeEnv {
   Development = 'development',
@@ -47,6 +47,29 @@ export class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   MINIO_ROOT_PASSWORD!: string;
+
+  @IsString()
+  @IsOptional()
+  MINIO_ENDPOINT: string = 'localhost';
+
+  @IsInt()
+  @Min(0)
+  @Max(65535)
+  @IsOptional()
+  MINIO_PORT: number = 9000;
+
+  @Transform(({ obj }) => String(obj.MINIO_USE_SSL).toLowerCase() === 'true')
+  @IsBoolean()
+  @IsOptional()
+  MINIO_USE_SSL: boolean = false;
+
+  @IsString()
+  @IsOptional()
+  MINIO_BUCKET: string = 'hr-documents';
+
+  @IsString()
+  @IsOptional()
+  MINIO_TMP_BUCKET: string = 'hr-documents-tmp';
 
   @IsString()
   @IsNotEmpty()

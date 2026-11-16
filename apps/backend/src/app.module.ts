@@ -9,6 +9,7 @@ import { UserModule } from './modules/user.module';
 import { JobListingModule } from './modules/job-listing.module';
 import { ApplicationFormModule } from './modules/application-form.module';
 import { PublicModule } from './modules/public.module';
+import { DocumentModule } from './modules/document.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { PublicModule } from './modules/public.module';
     UserModule,
     JobListingModule,
     ApplicationFormModule,
+    DocumentModule,
     PublicModule,
   ],
   controllers: [],

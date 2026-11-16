@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsOptional, IsString, IsUUID, IsUrl, Length, MaxLength } from 'class-validator';
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsEmail, IsNotEmpty, IsOptional, IsString, IsUUID, IsUrl, Length, MaxLength } from 'class-validator';
 
 const trim = ({ value }: { value: unknown }) =>
   typeof value === 'string' ? value.trim() : value;
@@ -12,10 +12,6 @@ const trimToUndefined = ({ value }: { value: unknown }) => {
 
 const URL_OPTIONS = { protocols: ['http', 'https'], require_protocol: true };
 
-/**
- * What an applicant may send from the public portal. Unlike CreateApplicationFormDto it
- * has no status or submission date, and the extra fields are fixed rather than free-form.
- */
 export class SubmitApplicationDto {
   @IsUUID('all', { message: 'jobId must be a valid UUID' })
   @IsNotEmpty({ message: 'jobId is required' })
@@ -68,4 +64,10 @@ export class SubmitApplicationDto {
   @IsString()
   @MaxLength(5000, { message: 'Cover letter must be at most 5000 characters' })
   coverLetter?: string;
+
+  @IsArray({ message: 'documentIds is required' })
+  @ArrayMinSize(1, { message: 'At least one document must be attached' })
+  @ArrayMaxSize(5, { message: 'At most 5 documents can be attached' })
+  @IsUUID('all', { each: true, message: 'Each document id must be a valid UUID' })
+  documentIds!: string[];
 }
