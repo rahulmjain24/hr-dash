@@ -1,9 +1,20 @@
 import { Transform, Type } from 'class-transformer';
-import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsObject, IsOptional, IsString, IsUUID, Length, ValidateIf } from 'class-validator';
+import { IsDate, IsDateString, IsEmail, IsEnum, IsIn, IsNotEmpty, IsObject, IsOptional, IsString, IsUUID, Length, MaxLength, ValidateIf } from 'class-validator';
 import { JobStatusEnum } from '../entities/application-form.entity';
+import { DepartmentNameEnum } from '../entities/department.entity';
+import { PaginationQueryDto } from './pagination.dto';
 
 const trim = ({ value }: { value: unknown }) =>
   typeof value === 'string' ? value.trim() : value;
+
+const trimToUndefined = ({ value }: { value: unknown }) => {
+  if (typeof value !== 'string') return value;
+  const trimmed = value.trim();
+  return trimmed === '' ? undefined : trimmed;
+};
+
+export const JOB_STATES = ['active', 'closed'] as const;
+export type JobState = (typeof JOB_STATES)[number];
 
 export class CreateApplicationFormDto {
   @Transform(trim)
@@ -107,14 +118,47 @@ export class UpdateApplicationStatusDto {
   status!: JobStatusEnum;
 }
 
-export class QueryApplicationFormDto {
+export class QueryApplicationFormDto extends PaginationQueryDto {
+  /** Matches first name, last name or email (case-insensitive). */
   @IsOptional()
-  @IsUUID('all', { message: 'jobId must be a valid UUID' })
-  jobId?: string;
+  @Transform(trimToUndefined)
+  @IsString()
+  @MaxLength(255)
+  search?: string;
 
   @IsOptional()
+  @Transform(trimToUndefined)
   @IsEnum(JobStatusEnum, {
     message: 'status must be a valid JobStatusEnum value',
   })
   status?: JobStatusEnum;
+
+  @IsOptional()
+  @Transform(trimToUndefined)
+  @IsUUID('all', { message: 'jobId must be a valid UUID' })
+  jobId?: string;
+
+  @IsOptional()
+  @Transform(trimToUndefined)
+  @IsEnum(DepartmentNameEnum, {
+    message: 'department must be a valid DepartmentNameEnum value',
+  })
+  department?: DepartmentNameEnum;
+
+  @IsOptional()
+  @Transform(trimToUndefined)
+  @IsIn(JOB_STATES, { message: `jobState must be one of: ${JOB_STATES.join(', ')}` })
+  jobState?: JobState;
+
+  /** Submitted on or after this date (YYYY-MM-DD or ISO 8601). */
+  @IsOptional()
+  @Transform(trimToUndefined)
+  @IsDateString({}, { message: 'from must be a valid ISO 8601 date' })
+  from?: string;
+
+  /** Submitted on or before this date (YYYY-MM-DD is inclusive of the whole day). */
+  @IsOptional()
+  @Transform(trimToUndefined)
+  @IsDateString({}, { message: 'to must be a valid ISO 8601 date' })
+  to?: string;
 }

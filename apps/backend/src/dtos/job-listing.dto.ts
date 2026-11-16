@@ -60,7 +60,6 @@ export class CreateJobListingDto {
 }
 
 export class UpdateJobListingDto {
-  // title is NOT NULL in the DB: may be omitted, but never null/empty
   @ValidateIf((_, value) => value !== undefined)
   @Transform(trim)
   @IsString()

@@ -1,5 +1,5 @@
 import { PrimaryKey, Property } from '@mikro-orm/decorators/legacy';
-import { type Opt, BaseEntity } from '@mikro-orm/core';
+import { BaseEntity } from '@mikro-orm/core';
 
 export abstract class BaseUUIDEntity extends BaseEntity {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })

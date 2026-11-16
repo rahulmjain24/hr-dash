@@ -56,12 +56,10 @@ export class EnvironmentVariables {
   @IsNotEmpty()
   AUTH_COOKIE_NAME!: string;
 
-  // Base URL of the HR frontend, used to build links in emails
   @IsString()
   @IsOptional()
   FRONTEND_URL: string = 'http://localhost:3001';
 
-  // SMTP is optional: without SMTP_HOST, emails are written to the server log
   @IsString()
   @IsOptional()
   SMTP_HOST?: string;

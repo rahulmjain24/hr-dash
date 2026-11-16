@@ -26,10 +26,6 @@ export class PasswordResetService {
       .replace(/\/+$/, '');
   }
 
-  /**
-   * Emails a reset link if the address belongs to a user. Never reveals
-   * whether it does: the caller gets the same result either way.
-   */
   async requestReset(email: string): Promise<void> {
     const user = await this.userService.findByEmail(email);
     if (!user) return;
@@ -55,7 +51,6 @@ export class PasswordResetService {
     }
   }
 
-  /** Tells the reset page whose password a link is for, or that the link is dead. */
   async getResetTarget(token: string): Promise<{ email: string }> {
     const resetToken = await this.findUsableOrFail(token);
     return { email: resetToken.user.email };

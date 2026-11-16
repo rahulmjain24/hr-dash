@@ -3,6 +3,7 @@ import { BaseService } from './base.service';
 import { ApplicationForm, JobStatusEnum } from '../entities/application-form.entity';
 import { ApplicationFormRepository } from '../repositories/application-form.repository';
 import { JobListingService } from './job-listing.service';
+import type { PaginatedResult } from '../utils/pagination.utils';
 import type { CreateApplicationFormDto, QueryApplicationFormDto, UpdateApplicationFormDto } from '../dtos/application-form.dto';
 
 @Injectable()
@@ -113,13 +114,10 @@ export class ApplicationFormService extends BaseService<ApplicationForm> {
 
   async findWithFilters(
     filters?: QueryApplicationFormDto,
-  ): Promise<ApplicationForm[]> {
-    if (filters?.jobId || filters?.status) {
-      if (filters.jobId) {
-        await this.jobListingService.getById(filters.jobId);
-      }
-      return this.applicationFormRepo.findByFilters(filters);
+  ): Promise<PaginatedResult<ApplicationForm>> {
+    if (filters?.jobId) {
+      await this.jobListingService.getById(filters.jobId);
     }
-    return this.getAll();
+    return this.applicationFormRepo.findByFilters(filters ?? {});
   }
 }
