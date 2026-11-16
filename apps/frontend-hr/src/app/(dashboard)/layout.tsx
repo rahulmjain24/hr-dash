@@ -1,38 +1,50 @@
-import Link from 'next/link';
-import LogoutButton from '@/components/LogoutButton';
+import { cookies } from 'next/headers';
+import Sidebar from '@/components/Sidebar';
+import { CurrentUserProvider } from '@/components/CurrentUser';
+import { API_URL, AUTH_COOKIE_NAME } from '@/lib/config';
+import type { CurrentUser } from '@/lib/types';
 
-export default function DashboardLayout({
+/**
+ * Resolves the signed-in user for display. The id and role come from the JWT payload
+ * (the backend verifies the token on every API call); the name is looked up from the API.
+ */
+async function getCurrentUser(): Promise<CurrentUser | null> {
+  const token = (await cookies()).get(AUTH_COOKIE_NAME)?.value;
+  if (!token) return null;
+
+  try {
+    const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString());
+    const current: CurrentUser = { id: payload.sub, role: payload.role, name: '', email: '' };
+
+    const res = await fetch(`${API_URL}/user/${payload.sub}`, {
+      headers: { Cookie: `${AUTH_COOKIE_NAME}=${token}` },
+      cache: 'no-store',
+    }).catch(() => null);
+
+    if (res?.ok) {
+      const user = await res.json();
+      current.name = user.name ?? '';
+      current.email = user.email ?? '';
+    }
+    return current;
+  } catch {
+    return null;
+  }
+}
+
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-64 bg-slate-900 text-white flex flex-col">
-        <div className="p-4 text-xl font-bold border-b border-slate-800">
-          HR Dash
-        </div>
-        <nav className="flex-1 p-4 space-y-2">
-          <Link href="/" className="block p-2 hover:bg-slate-800 rounded">
-            Overview
-          </Link>
-          <Link href="/departments" className="block p-2 hover:bg-slate-800 rounded">
-            Departments
-          </Link>
-          <Link href="/users/create" className="block p-2 hover:bg-slate-800 rounded">
-            Create User
-          </Link>
-        </nav>
-        <div className="p-4 border-t border-slate-800">
-          <LogoutButton />
-        </div>
-      </aside>
+  const user = await getCurrentUser();
 
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto p-8 text-black">
-        {children}
-      </main>
-    </div>
+  return (
+    <CurrentUserProvider user={user}>
+      <div className="box-border flex min-h-screen flex-wrap items-stretch bg-gray-100 text-gray-900">
+        <Sidebar />
+        <main className="box-border min-w-0 flex-[999_1_560px] p-8">{children}</main>
+      </div>
+    </CurrentUserProvider>
   );
 }

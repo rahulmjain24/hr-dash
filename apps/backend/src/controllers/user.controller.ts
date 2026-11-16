@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, HttpCode, HttpStatus, Param, ParseUUIDPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import { BaseController } from './base.controller';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
@@ -12,6 +12,17 @@ import { CreateUserDto, UpdateUserDto } from 'src/dtos/user.dto';
 export class UserController extends BaseController<UserEntity> {
   constructor(private readonly userService: UserService) {
     super(userService);
+  }
+
+  @Get()
+  @Roles(Role.ADMIN)
+  async getAll() {
+    return this.userService.getAll();
+  }
+
+  @Get(':id')
+  async getById(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.userService.getById(id);
   }
 
   @Post('create')

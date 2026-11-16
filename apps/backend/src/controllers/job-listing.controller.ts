@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Param, ParseUUIDPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import { BaseController } from './base.controller';
 import { JobListing } from 'src/entities/job-listing.entity';
 import { JobListingService } from 'src/services/job-listing.service';
@@ -12,6 +12,16 @@ import { Role, Roles } from 'src/decorators/roles.decorator';
 export class JobListingController extends BaseController<JobListing> {
   constructor(private readonly jobListingService: JobListingService) {
     super(jobListingService);
+  }
+
+  @Get()
+  async getAll() {
+    return this.jobListingService.getAll();
+  }
+
+  @Get(':id')
+  async getById(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.jobListingService.getById(id);
   }
 
   @Post()

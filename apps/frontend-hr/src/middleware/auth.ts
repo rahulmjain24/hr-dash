@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { AUTH_COOKIE_NAME, PUBLIC_PATHS } from '@/lib/config';
 
 export function auth(request: NextRequest) {
-  const authCookie = request.cookies.get('access_token');
-  const isAuthPage = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/register');
+  const { pathname } = request.nextUrl;
+  const authCookie = request.cookies.get(AUTH_COOKIE_NAME);
+  const isPublicPage = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
+  const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/register');
 
-  if (!authCookie && !isAuthPage) {
+  if (!authCookie && !isPublicPage) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
@@ -17,5 +20,5 @@ export function auth(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login', '/register'],
+  matcher: ['/dashboard/:path*', '/login'],
 };

@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "HR Dashboard",
+  title: "HR Portal",
   description: "Internal portal for hiring and department management",
 };
 
@@ -15,8 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full bg-gray-50">
-      <body className={`${inter.className} h-full antialiased text-slate-900`}>
+    <html lang="en" className="h-full bg-gray-100">
+      <body className={`${inter.className} h-full antialiased`}>
         {children}
       </body>
     </html>

@@ -1,0 +1,78 @@
+export type UserRole = 'ADMIN' | 'MEMBER';
+
+export const ROLE_LABELS: Record<UserRole, string> = {
+  ADMIN: 'Admin',
+  MEMBER: 'Member',
+};
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CurrentUser {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+}
+
+export const DEPARTMENT_LABELS: Record<string, string> = {
+  ENGINEERING: 'Engineering',
+  HR: 'HR',
+  SALES: 'Sales',
+  FINANCE: 'Finance',
+  IT: 'IT',
+};
+
+export const departmentLabel = (name?: string | null) =>
+  name ? (DEPARTMENT_LABELS[name] ?? name) : '—';
+
+export interface Department {
+  id: string;
+  name: string;
+  description?: string | null;
+}
+
+export interface JobListing {
+  id: string;
+  title: string;
+  description?: string | null;
+  department?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  isActive?: boolean | null;
+  createdAt: string;
+}
+
+export const isListingActive = (job: Pick<JobListing, 'isActive'>) => job.isActive !== false;
+
+export type ApplicationStatus = 'APPLIED' | 'REVIEWING' | 'HIRED' | 'REJECTED';
+
+export const STATUS_LABELS: Record<ApplicationStatus, string> = {
+  APPLIED: 'Applied',
+  REVIEWING: 'Reviewing',
+  HIRED: 'Hired',
+  REJECTED: 'Rejected',
+};
+
+export interface Application {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  job: JobListing;
+  status?: ApplicationStatus | null;
+  additionalProperties?: Record<string, unknown> | null;
+  submissonDate?: string | null;
+  createdAt: string;
+}
+
+export interface Paginated<T> {
+  data: T[];
+  meta: { total: number; page: number; limit: number; totalPages: number };
+}
