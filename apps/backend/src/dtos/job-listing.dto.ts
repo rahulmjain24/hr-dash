@@ -40,7 +40,7 @@ export class CreateJobListingDto {
   @IsOptional()
   @Transform(trim)
   @IsString()
-  @MaxLength(255, { message: 'Description must be at most 255 characters' })
+  @MaxLength(10_000, { message: 'Description must be at most 10,000 characters' })
   description?: string;
 
   @IsOptional()
@@ -70,7 +70,7 @@ export class UpdateJobListingDto {
   @IsOptional()
   @Transform(trim)
   @IsString()
-  @MaxLength(255, { message: 'Description must be at most 255 characters' })
+  @MaxLength(10_000, { message: 'Description must be at most 10,000 characters' })
   description?: string | null;
 
   @IsOptional()
