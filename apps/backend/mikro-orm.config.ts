@@ -10,6 +10,7 @@ import { ApplicationFormEntity } from './src/entities/application-form.entity';
 import { PasswordResetTokenEntity } from './src/entities/password-reset-token.entity';
 import { DocumentEntity } from './src/entities/document.entity';
 import { ApplicationStatusHistoryEntity } from './src/entities/application-status-history.entity';
+import { InterviewEntity } from './src/entities/interview.entity';
 
 dotenv.config({ path: path.resolve(process.cwd(), '../../.env') });
 
@@ -23,6 +24,7 @@ export default defineConfig({
     PasswordResetTokenEntity,
     DocumentEntity,
     ApplicationStatusHistoryEntity,
+    InterviewEntity,
   ],
   driver: PostgreSqlDriver,
   host: process.env.DB_HOST,

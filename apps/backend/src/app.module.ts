@@ -11,6 +11,7 @@ import { ApplicationFormModule } from './modules/application-form.module';
 import { PublicModule } from './modules/public.module';
 import { DocumentModule } from './modules/document.module';
 import { ApplicationStatusHistoryModule } from './modules/application-status-history.module';
+import { InterviewModule } from './modules/interview.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ApplicationStatusHistoryModule } from './modules/application-status-his
     ApplicationFormModule,
     DocumentModule,
     ApplicationStatusHistoryModule,
+    InterviewModule,
     PublicModule,
   ],
   controllers: [],
