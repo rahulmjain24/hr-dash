@@ -36,7 +36,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -177,7 +177,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -280,7 +280,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "now()",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -365,7 +365,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "now()",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -469,7 +469,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -543,7 +543,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -640,7 +640,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "now()",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -798,7 +798,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "now()",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -822,7 +822,7 @@
             "object_key"
           ],
           "composite": true,
-          "constraint": true,
+          "constraint": false,
           "keyName": "tbl_documents_bucket_object_key_unique",
           "primary": false,
           "unique": true
@@ -865,6 +865,212 @@
       "comment": null
     },
     {
+      "name": "tbl_interviews",
+      "schema": "public",
+      "columns": {
+        "application_id": {
+          "name": "application_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "now()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "duration_minutes": {
+          "name": "duration_minutes",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "60",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "gen_random_uuid()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "interviewer_user_id": {
+          "name": "interviewer_user_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "meeting_link": {
+          "name": "meeting_link",
+          "type": "varchar(2048)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 2048,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "scheduled_at": {
+          "name": "scheduled_at",
+          "type": "timestamptz(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "now()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        }
+      },
+      "indexes": [
+        {
+          "columnNames": [
+            "application_id"
+          ],
+          "composite": false,
+          "constraint": false,
+          "keyName": "tbl_interviews_application_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "interviewer_user_id",
+            "scheduled_at"
+          ],
+          "composite": true,
+          "constraint": false,
+          "keyName": "tbl_interviews_interviewer_user_id_scheduled_at_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "keyName": "tbl_interviews_pkey",
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "triggers": [],
+      "foreignKeys": {
+        "tbl_interviews_application_id_foreign": {
+          "columnNames": [
+            "application_id"
+          ],
+          "constraintName": "tbl_interviews_application_id_foreign",
+          "localTableName": "public.tbl_interviews",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.tbl_application_forms",
+          "updateRule": "cascade",
+          "deleteRule": "cascade"
+        },
+        "tbl_interviews_interviewer_user_id_foreign": {
+          "columnNames": [
+            "interviewer_user_id"
+          ],
+          "constraintName": "tbl_interviews_interviewer_user_id_foreign",
+          "localTableName": "public.tbl_interviews",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.tbl_users",
+          "updateRule": "cascade",
+          "deleteRule": "restrict"
+        }
+      },
+      "comment": null
+    },
+    {
       "name": "tbl_job_listings",
       "schema": "public",
       "columns": {
@@ -879,7 +1085,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -910,20 +1116,20 @@
         },
         "description": {
           "name": "description",
-          "type": "varchar(255)",
+          "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
           "unique": false,
-          "length": 255,
+          "length": null,
           "precision": null,
           "scale": null,
           "default": null,
           "comment": null,
           "collation": null,
           "enumItems": [],
-          "mappedType": "string"
+          "mappedType": "text"
         },
         "end_date": {
           "name": "end_date",
@@ -1021,7 +1227,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -1041,6 +1247,12 @@
         }
       ],
       "checks": [
+        {
+          "name": "chk_tbl_job_listings_description_length",
+          "expression": "char_length(description) <= 10000",
+          "definition": "CHECK ((char_length(description) <= 10000))",
+          "columnName": "description"
+        },
         {
           "name": "tbl_job_listings_department_check",
           "expression": "\"department\" in ('ENGINEERING', 'HR', 'SALES', 'FINANCE', 'IT')",
@@ -1067,7 +1279,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -1135,7 +1347,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -1231,7 +1443,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -1336,7 +1548,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],

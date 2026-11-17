@@ -10,6 +10,7 @@ import {
   Max,
   MaxLength,
   Min,
+  MinDate,
 } from 'class-validator';
 import { PaginationQueryDto } from './pagination.dto';
 
@@ -32,6 +33,7 @@ export class CreateInterviewDto {
 
   @Type(() => Date)
   @IsDate({ message: 'scheduledAt must be a valid ISO 8601 date' })
+  @MinDate(() => new Date(), { message: 'scheduledAt must be in the future' })
   @IsNotEmpty({ message: 'scheduledAt is required' })
   scheduledAt!: Date;
 

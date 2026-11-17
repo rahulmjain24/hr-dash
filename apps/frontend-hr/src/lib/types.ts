@@ -76,6 +76,14 @@ export interface StatusHistoryEntry {
   user?: Pick<User, 'id' | 'name' | 'email'> | null;
 }
 
+export interface Interview {
+  id: string;
+  scheduledAt: string;
+  durationMinutes: number;
+  meetingLink?: string | null;
+  interviewer?: Pick<User, 'id' | 'name' | 'email'> | null;
+}
+
 export interface Application {
   id: string;
   email: string;

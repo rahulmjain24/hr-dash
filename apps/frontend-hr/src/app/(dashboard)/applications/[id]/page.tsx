@@ -17,6 +17,7 @@ import {
   type StatusHistoryEntry,
 } from '@/lib/types';
 import StatusBadge from '@/components/StatusBadge';
+import Meetings from '@/components/Meetings';
 import { DownloadIcon, FileTextIcon } from '@/components/icons';
 import {
   Avatar,
@@ -365,6 +366,8 @@ export default function ApplicationDetailPage() {
               </section>
 
               <Documents applicationId={app.id} />
+
+              <Meetings key={app.id} applicationId={app.id} />
 
               <section className={`${cardClass} px-5 py-2`}>
                 <h2 className="pt-3 text-base font-semibold">Additional details</h2>
