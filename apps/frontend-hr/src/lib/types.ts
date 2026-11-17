@@ -60,6 +60,22 @@ export const STATUS_LABELS: Record<ApplicationStatus, string> = {
   REJECTED: 'Rejected',
 };
 
+export const STATUS_TRANSITIONS: Record<ApplicationStatus, ApplicationStatus[]> = {
+  APPLIED: ['REVIEWING'],
+  REVIEWING: ['HIRED', 'REJECTED'],
+  HIRED: [],
+  REJECTED: [],
+};
+
+export interface StatusHistoryEntry {
+  id: string;
+  oldStatus?: ApplicationStatus | null;
+  newStatus: ApplicationStatus;
+  remarks?: string | null;
+  changedAt: string;
+  user?: Pick<User, 'id' | 'name' | 'email'> | null;
+}
+
 export interface Application {
   id: string;
   email: string;

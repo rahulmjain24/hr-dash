@@ -42,8 +42,9 @@ export class ApplicationFormController extends BaseController<ApplicationFormEnt
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateApplicationFormDto,
+    @Req() req: { user: { id: string } },
   ) {
-    return this.applicationFormService.updateApplication(id, dto);
+    return this.applicationFormService.updateApplication(id, dto, req.user.id);
   }
 
   @Patch(':id/status')

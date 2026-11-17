@@ -36,7 +36,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -177,7 +177,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -232,6 +232,229 @@
       "comment": null
     },
     {
+      "name": "tbl_application_status_history",
+      "schema": "public",
+      "columns": {
+        "application_id": {
+          "name": "application_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "changed_at": {
+          "name": "changed_at",
+          "type": "timestamptz(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "now()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "now()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "gen_random_uuid()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "new_status": {
+          "name": "new_status",
+          "type": "varchar(20)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "old_status": {
+          "name": "old_status",
+          "type": "varchar(20)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "remarks": {
+          "name": "remarks",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "now()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        }
+      },
+      "indexes": [
+        {
+          "columnNames": [
+            "application_id",
+            "changed_at"
+          ],
+          "composite": true,
+          "constraint": false,
+          "keyName": "tbl_application_status_history_application_id_changed_at_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "keyName": "tbl_application_status_history_pkey",
+          "primary": true,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "user_id"
+          ],
+          "composite": false,
+          "constraint": false,
+          "keyName": "tbl_application_status_history_user_id_index",
+          "primary": false,
+          "unique": false
+        }
+      ],
+      "checks": [],
+      "triggers": [],
+      "foreignKeys": {
+        "tbl_application_status_history_application_id_foreign": {
+          "columnNames": [
+            "application_id"
+          ],
+          "constraintName": "tbl_application_status_history_application_id_foreign",
+          "localTableName": "public.tbl_application_status_history",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.tbl_application_forms",
+          "updateRule": "cascade",
+          "deleteRule": "cascade"
+        },
+        "tbl_application_status_history_user_id_foreign": {
+          "columnNames": [
+            "user_id"
+          ],
+          "constraintName": "tbl_application_status_history_user_id_foreign",
+          "localTableName": "public.tbl_application_status_history",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.tbl_users",
+          "updateRule": "cascade",
+          "deleteRule": "restrict"
+        }
+      },
+      "comment": null
+    },
+    {
       "name": "tbl_departments",
       "schema": "public",
       "columns": {
@@ -246,7 +469,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -320,7 +543,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -417,7 +640,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "now()",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -575,7 +798,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "now()",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -599,7 +822,7 @@
             "object_key"
           ],
           "composite": true,
-          "constraint": true,
+          "constraint": false,
           "keyName": "tbl_documents_bucket_object_key_unique",
           "primary": false,
           "unique": true
@@ -656,7 +879,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -798,7 +1021,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -844,7 +1067,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -912,7 +1135,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -1008,7 +1231,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -1113,7 +1336,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "current_timestamp",
+          "default": "CURRENT_TIMESTAMP",
           "comment": null,
           "collation": null,
           "enumItems": [],

@@ -8,6 +8,13 @@ import type { PaginatedResult } from '../utils/pagination.utils';
 import type { CreateApplicationFormDto, QueryApplicationFormDto, UpdateApplicationFormDto } from '../dtos/application-form.dto';
 import type { SubmitApplicationDto } from '../dtos/public-application.dto';
 
+export const STATUS_TRANSITIONS: Record<JobStatusEnum, JobStatusEnum[]> = {
+  [JobStatusEnum.APPLIED]: [JobStatusEnum.REVIEWING],
+  [JobStatusEnum.REVIEWING]: [JobStatusEnum.HIRED, JobStatusEnum.REJECTED],
+  [JobStatusEnum.HIRED]: [],
+  [JobStatusEnum.REJECTED]: [],
+};
+
 @Injectable()
 export class ApplicationFormService extends BaseService<ApplicationFormEntity> {
   constructor(
@@ -76,6 +83,7 @@ export class ApplicationFormService extends BaseService<ApplicationFormEntity> {
   async updateApplication(
     id: string,
     dto: UpdateApplicationFormDto,
+    userId: string,
   ): Promise<ApplicationFormEntity> {
     if (Object.keys(dto).length === 0) {
       throw new BadRequestException(
@@ -106,12 +114,15 @@ export class ApplicationFormService extends BaseService<ApplicationFormEntity> {
     if (dto.email !== undefined) updatePayload.email = dto.email;
     if (dto.firstName !== undefined) updatePayload.firstName = dto.firstName;
     if (dto.lastName !== undefined) updatePayload.lastName = dto.lastName;
-    if (dto.status !== undefined) updatePayload.status = dto.status;
     if (dto.additionalProperties !== undefined) {
       updatePayload.additionalProperties = dto.additionalProperties;
     }
     if (submissonDate !== undefined) {
       updatePayload.submissonDate = submissonDate;
+    }
+
+    if (dto.status !== undefined) {
+      this.changeStatus(existing, dto.status, userId);
     }
 
     return this.update(id, updatePayload);
@@ -124,22 +135,40 @@ export class ApplicationFormService extends BaseService<ApplicationFormEntity> {
     remarks?: string,
   ): Promise<ApplicationFormEntity> {
     const application = await this.getById(id);
-    const oldStatus = application.status;
-    if (oldStatus === status) {
-      return application;
+    this.changeStatus(application, status, userId, remarks);
+    await this.applicationFormRepo.getEntityManager().flush();
+    return application;
+  }
+
+  private changeStatus(
+    application: ApplicationFormEntity,
+    status: JobStatusEnum,
+    userId: string,
+    remarks?: string,
+  ): void {
+    const oldStatus = application.status ?? JobStatusEnum.APPLIED;
+    if (oldStatus === status) return;
+
+    if (!STATUS_TRANSITIONS[oldStatus].includes(status)) {
+      const allowed = STATUS_TRANSITIONS[oldStatus];
+      throw new BadRequestException(
+        allowed.length
+          ? `Status cannot be changed from ${oldStatus} to ${status}. Allowed: ${allowed.join(', ')}`
+          : `Status cannot be changed once an application is ${oldStatus}`,
+      );
     }
 
-    // createOne flushes the whole unit of work, so the status change and its
-    // history row are written in a single transaction.
     application.status = status;
-    await this.statusHistoryRepo.createOne({
-      application,
-      user: userId,
-      oldStatus,
-      newStatus: status,
-      remarks,
-    });
-    return application;
+    const em = this.statusHistoryRepo.getEntityManager();
+    em.persist(
+      this.statusHistoryRepo.create({
+        application,
+        user: userId,
+        oldStatus,
+        newStatus: status,
+        remarks,
+      } as any),
+    );
   }
 
   async findByJobId(jobId: string): Promise<ApplicationFormEntity[]> {

@@ -3,16 +3,18 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { useParams } from 'next/navigation';
 import { api, getErrorMessage } from '@/lib/api';
-import { formatDate, formatFileSize } from '@/lib/format';
+import { formatDate, formatDateTime, formatFileSize } from '@/lib/format';
 import { useFetch } from '@/lib/useFetch';
 import {
   DOCUMENT_TYPE_LABELS,
   STATUS_LABELS,
+  STATUS_TRANSITIONS,
   departmentLabel,
   isListingActive,
   type Application,
   type ApplicationDocument,
   type ApplicationStatus,
+  type StatusHistoryEntry,
 } from '@/lib/types';
 import StatusBadge from '@/components/StatusBadge';
 import { DownloadIcon, FileTextIcon } from '@/components/icons';
@@ -24,9 +26,11 @@ import {
   btnPrimary,
   btnSmall,
   cardClass,
+  fieldClass,
   labelClass,
   linkClass,
   selectClass,
+  textareaClass,
 } from '@/components/ui';
 
 /** Turns a key like "linkedinUrl" or "years_experience" into "Linkedin url" / "Years experience". */
@@ -147,25 +151,38 @@ function Documents({ applicationId }: { applicationId: string }) {
   );
 }
 
-function StatusForm({ application }: { application: Application }) {
-  const [saved, setSaved] = useState(application.status ?? null);
-  const [selected, setSelected] = useState<ApplicationStatus | ''>(application.status ?? '');
+function StatusForm({
+  application,
+  onSaved,
+}: {
+  application: Application;
+  onSaved: () => void;
+}) {
+  const [saved, setSaved] = useState<ApplicationStatus>(application.status ?? 'APPLIED');
+  const [selected, setSelected] = useState<ApplicationStatus | ''>('');
+  const [remarks, setRemarks] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const dirty = selected !== '' && selected !== saved;
+  const nextStatuses = STATUS_TRANSITIONS[saved];
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!dirty) return;
+    if (selected === '') return;
     setSaving(true);
     setError('');
     setSuccess('');
     try {
-      await api.patch(`/application-forms/${application.id}/status`, { status: selected });
+      await api.patch(`/application-forms/${application.id}/status`, {
+        status: selected,
+        remarks: remarks.trim() || undefined,
+      });
       setSaved(selected);
+      setSelected('');
+      setRemarks('');
       setSuccess(`Status updated to ${STATUS_LABELS[selected]}.`);
+      onSaved();
     } catch (err) {
       setError(getErrorMessage(err, 'Failed to update the status'));
     } finally {
@@ -185,37 +202,111 @@ function StatusForm({ application }: { application: Application }) {
       {error && <ErrorAlert>{error}</ErrorAlert>}
       {success && <SuccessAlert>{success}</SuccessAlert>}
 
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="status" className={labelClass}>
-          Update status
-        </label>
-        <select
-          id="status"
-          value={selected}
-          disabled={saving}
-          onChange={(e) => {
-            setSelected(e.target.value as ApplicationStatus);
-            setSuccess('');
-          }}
-          className={`${selectClass} w-full`}
-        >
-          {selected === '' && (
-            <option value="" disabled>
-              Select a status
-            </option>
-          )}
-          {Object.entries(STATUS_LABELS).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
-      </div>
+      {nextStatuses.length === 0 ? (
+        <p className="text-[13px] text-gray-600">
+          This application is {STATUS_LABELS[saved].toLowerCase()}. Its status can no longer be
+          changed.
+        </p>
+      ) : (
+        <>
+          <div className={fieldClass}>
+            <label htmlFor="status" className={labelClass}>
+              Update status
+            </label>
+            <select
+              id="status"
+              value={selected}
+              disabled={saving}
+              onChange={(e) => {
+                setSelected(e.target.value as ApplicationStatus);
+                setSuccess('');
+              }}
+              className={`${selectClass} w-full`}
+            >
+              <option value="" disabled>
+                Select a status
+              </option>
+              {nextStatuses.map((value) => (
+                <option key={value} value={value}>
+                  {STATUS_LABELS[value]}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      <button type="submit" disabled={!dirty || saving} className={btnPrimary}>
-        {saving ? 'Saving...' : 'Save status'}
-      </button>
+          <div className={fieldClass}>
+            <label htmlFor="remarks" className={labelClass}>
+              Remarks <span className="font-normal text-gray-500">(optional)</span>
+            </label>
+            <textarea
+              id="remarks"
+              rows={3}
+              maxLength={2000}
+              value={remarks}
+              disabled={saving}
+              onChange={(e) => setRemarks(e.target.value)}
+              className={textareaClass}
+            />
+          </div>
+
+          <button type="submit" disabled={selected === '' || saving} className={btnPrimary}>
+            {saving ? 'Saving...' : 'Save status'}
+          </button>
+        </>
+      )}
     </form>
+  );
+}
+
+function StatusHistory({ applicationId }: { applicationId: string }) {
+  const history = useFetch<StatusHistoryEntry[]>(
+    `/application-status-history/application/${applicationId}`,
+  );
+
+  return (
+    <section className={`${cardClass} flex flex-col gap-3 p-5`}>
+      <h2 className="text-base font-semibold">Status history</h2>
+      {history.loading && <p className="text-sm text-gray-600">Loading history...</p>}
+      {history.error && <ErrorAlert>{history.error}</ErrorAlert>}
+      {history.data?.length === 0 && (
+        <p className="text-sm text-gray-600">No status changes have been recorded yet.</p>
+      )}
+      {history.data && history.data.length > 0 && (
+        <ol className="flex flex-col divide-y divide-gray-200">
+          {history.data.map((entry) => (
+            <li key={entry.id} className="flex flex-col gap-1.5 py-3 first:pt-0 last:pb-0">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <StatusBadge status={entry.oldStatus} />
+                <span aria-label="changed to" className="text-gray-500">
+                  →
+                </span>
+                <StatusBadge status={entry.newStatus} />
+              </div>
+              <p className="text-xs text-gray-600">
+                {entry.user?.name ?? 'Unknown user'} · {formatDateTime(entry.changedAt)}
+              </p>
+              {entry.remarks && (
+                <p className="whitespace-pre-wrap break-words text-[13px] text-gray-900">
+                  {entry.remarks}
+                </p>
+              )}
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
+  );
+}
+
+function StatusPanel({ application }: { application: Application }) {
+  // Bumped after each save so the history remounts and refetches.
+  const [historyVersion, setHistoryVersion] = useState(0);
+
+  return (
+    <div className="flex flex-col gap-6">
+      <StatusForm application={application} onSaved={() => setHistoryVersion((v) => v + 1)} />
+      <StatusHistory key={historyVersion} applicationId={application.id} />
+    </div>
   );
 }
 
@@ -293,7 +384,7 @@ export default function ApplicationDetailPage() {
               </section>
             </div>
 
-            <StatusForm key={app.id} application={app} />
+            <StatusPanel key={app.id} application={app} />
           </div>
         </>
       )}
