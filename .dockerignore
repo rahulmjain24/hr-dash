@@ -1,0 +1,15 @@
+.git
+.data
+.env
+**/.env*
+!.env.example
+**/node_modules
+**/.next
+**/dist
+**/*.tsbuildinfo
+**/*.log
+.DS_Store
+.vscode
+.idea
+.claude
+docs

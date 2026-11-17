@@ -88,11 +88,11 @@ Interview scheduling, document uploads, a status audit trail, and a public appli
 - [x] HR dashboard (Next.js): login, members, job listings, applications
 - [x] Department & job listing management
 - [x] Application tracking with status updates and filters
+- [x] Docker images for the backend and frontends
 - [ ] Public applicant portal
 - [ ] Application status history (audit trail)
 - [ ] Document uploads to MinIO
 - [ ] Interview scheduling
-- [ ] Docker images for the backend and frontend (Postgres and MinIO are already in Compose)
 - [ ] Testing & deployment
 
 ---
@@ -117,20 +117,32 @@ cp .env.example .env
 
 # 3. Start Postgres and MinIO
 
-docker compose up -d
+docker compose up -d postgres minio
 
-# 4. Run database migrations
-
-npm run db:migrate
-
-# 5. Start the backend (http://localhost:3000)
+# 4. Start the backend (http://localhost:3000); it applies pending migrations on startup
 
 npm run dev:backend
 
-# 6. In another terminal, start the HR dashboard (http://localhost:3001)
+# 5. In another terminal, start the HR dashboard (http://localhost:3001)
 
 npm run dev:frontend-hr -- -p 3001
 ```
+
+### Running everything in Docker
+
+Instead of steps 3 to 5, Compose can build and run everything:
+
+```bash
+docker compose up -d --build
+```
+
+| Service | URL |
+|---|---|
+| `backend` | <http://localhost:3000> |
+| `frontend-hr` | <http://localhost:3001> |
+| `frontend-application` | <http://localhost:3002> |
+
+The backend applies pending migrations each time it starts. Migrations are compiled into the image, so pass `--build` after creating one.
 
 The backend and Next.js both default to port 3000, so pass `-p 3001` to the frontend. `FRONTEND_URL` (which the backend uses for CORS and password-reset links) defaults to `http://localhost:3001`.
 
@@ -209,7 +221,7 @@ hr-dash/
 │   │   └── mikro-orm.config.ts
 │   └── frontend-hr/      # Next.js HR dashboard
 ├── docs/images/          # Architecture, request flow, and DB diagrams
-├── docker-compose.yml    # Postgres + MinIO
+├── docker-compose.yml    # Postgres, MinIO, backend, and both frontends
 └── .env.example
 ```
 
@@ -219,7 +231,7 @@ hr-dash/
 |---|---|
 | `npm run dev:backend` | Start the backend in watch mode |
 | `npm run dev:frontend-hr` | Start the HR dashboard dev server |
-| `npm run db:migrate` | Apply pending migrations |
+| `npm run db:migrate` | Apply pending migrations manually (the backend also does this on startup) |
 | `npm run db:generate` | Generate a migration from entity changes |
 | `npm run db:blank` | Create an empty migration |
 | `npm run db:down` | Roll back the last migration |

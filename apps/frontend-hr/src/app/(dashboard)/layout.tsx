@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import Sidebar from '@/components/Sidebar';
 import { CurrentUserProvider } from '@/components/CurrentUser';
-import { API_URL, AUTH_COOKIE_NAME } from '@/lib/config';
+import { AUTH_COOKIE_NAME, SERVER_API_URL } from '@/lib/config';
 import type { CurrentUser } from '@/lib/types';
 
 /**
@@ -16,7 +16,7 @@ async function getCurrentUser(): Promise<CurrentUser | null> {
     const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString());
     const current: CurrentUser = { id: payload.sub, role: payload.role, name: '', email: '' };
 
-    const res = await fetch(`${API_URL}/user/${payload.sub}`, {
+    const res = await fetch(`${SERVER_API_URL}/user/${payload.sub}`, {
       headers: { Cookie: `${AUTH_COOKIE_NAME}=${token}` },
       cache: 'no-store',
     }).catch(() => null);

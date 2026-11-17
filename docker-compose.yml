@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:18-alpine
-    container_name: hr_postgres
+    container_name: hr-dash-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER}
@@ -13,12 +13,17 @@ services:
       - ${DB_PORT}:${DB_PORT}
     volumes:
       - ./.data/postgres:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
     networks:
       - hr_network
 
   minio:
     image: pgsty/silo:latest
-    container_name: hr_minio
+    container_name: hr-dash-minio
     restart: unless-stopped
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
@@ -31,6 +36,66 @@ services:
     command: server /data --console-address ":9001"
     volumes:
       - ./.data/minio:/data
+    networks:
+      - hr_network
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    container_name: hr-dash-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    networks:
+      - hr_network
+
+  frontend-hr:
+    build:
+      context: .
+      dockerfile: apps/frontend-hr/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+        NEXT_AUTH_COOKIE_NAME: ${AUTH_COOKIE_NAME:-access_token}
+    container_name: hr-dash-frontend-hr
+    restart: unless-stopped
+    environment:
+      INTERNAL_API_URL: http://backend:3000
+      NEXT_AUTH_COOKIE_NAME: ${AUTH_COOKIE_NAME:-access_token}
+    ports:
+      - "3001:3001"
+    depends_on:
+      - backend
+    networks:
+      - hr_network
+
+  frontend-application:
+    build:
+      context: .
+      dockerfile: apps/frontend-application/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+    container_name: hr-dash-frontend-application
+    restart: unless-stopped
+    environment:
+      INTERNAL_API_URL: http://backend:3000
+    ports:
+      - "3002:3002"
+    depends_on:
+      - backend
     networks:
       - hr_network
 

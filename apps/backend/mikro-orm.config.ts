@@ -30,8 +30,8 @@ export default defineConfig({
   dbName: process.env.DB_NAME,
   extensions: [Migrator],
   migrations: {
-    path: './src/migrations',
-    pathTs: './src/migrations',
+    path: path.join(__dirname, 'src/migrations'),
+    pathTs: path.join(__dirname, 'src/migrations'),
     glob: '!(*.d).{js,ts}',
     transactional: true,
   },

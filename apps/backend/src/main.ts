@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from './config/env.validation';
+import { MikroORM } from '@mikro-orm/core';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,6 +25,8 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  await app.get(MikroORM).migrator.up();
 
   const configService = app.get(ConfigService<EnvironmentVariables, true>);
   await app.listen(configService.get('PORT', { infer: true }));
