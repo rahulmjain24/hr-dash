@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { BaseController } from './base.controller';
 import { ApplicationFormEntity } from '../entities/application-form.entity';
 import { ApplicationFormService } from '../services/application-form.service';
@@ -51,7 +51,13 @@ export class ApplicationFormController extends BaseController<ApplicationFormEnt
   async updateStatus(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateApplicationStatusDto,
+    @Req() req: { user: { id: string } },
   ) {
-    return this.applicationFormService.updateStatus(id, dto.status);
+    return this.applicationFormService.updateStatus(
+      id,
+      dto.status,
+      req.user.id,
+      dto.remarks,
+    );
   }
 }

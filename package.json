@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "db:migrate": "npm run migration:up --workspace=apps/backend",
-    "db:generate": "npm run migration:create --workspace=apps/backend",
+    "db:generate": "npm run migration:create --workspace=apps/backend --",
     "db:blank": "npm run migration:blank --workspace=apps/backend",
     "db:down": "npm run migration:down --workspace=apps/backend",
     "dev:backend": "npm run start:dev --workspace=apps/backend",

@@ -36,7 +36,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "CURRENT_TIMESTAMP",
+          "default": "current_timestamp",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -129,20 +129,25 @@
         },
         "status": {
           "name": "status",
-          "type": "varchar(255)",
+          "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
           "unique": false,
-          "length": 255,
+          "length": null,
           "precision": null,
           "scale": null,
           "default": null,
           "comment": null,
           "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
+          "enumItems": [
+            "APPLIED",
+            "REVIEWING",
+            "REJECTED",
+            "HIRED"
+          ],
+          "mappedType": "enum"
         },
         "submisson_date": {
           "name": "submisson_date",
@@ -172,7 +177,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "CURRENT_TIMESTAMP",
+          "default": "current_timestamp",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -202,7 +207,14 @@
           "unique": true
         }
       ],
-      "checks": [],
+      "checks": [
+        {
+          "name": "tbl_application_forms_status_check",
+          "expression": "\"status\" in ('APPLIED', 'REVIEWING', 'REJECTED', 'HIRED')",
+          "definition": "check (\"status\" in ('APPLIED', 'REVIEWING', 'REJECTED', 'HIRED'))",
+          "columnName": "status"
+        }
+      ],
       "triggers": [],
       "foreignKeys": {
         "tbl_application_forms_job_id_foreign": {
@@ -214,9 +226,7 @@
           "referencedColumnNames": [
             "id"
           ],
-          "referencedTableName": "public.tbl_job_listings",
-          "updateRule": "cascade",
-          "deleteRule": "cascade"
+          "referencedTableName": "public.tbl_job_listings"
         }
       },
       "comment": null
@@ -236,7 +246,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "CURRENT_TIMESTAMP",
+          "default": "current_timestamp",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -283,7 +293,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "unique": true,
+          "unique": false,
           "length": null,
           "precision": null,
           "scale": null,
@@ -310,7 +320,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "CURRENT_TIMESTAMP",
+          "default": "current_timestamp",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -318,16 +328,6 @@
         }
       },
       "indexes": [
-        {
-          "columnNames": [
-            "name"
-          ],
-          "composite": false,
-          "constraint": true,
-          "keyName": "tbl_departments_name_unique",
-          "primary": false,
-          "unique": true
-        },
         {
           "columnNames": [
             "id"
@@ -417,7 +417,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "now()",
+          "default": "current_timestamp",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -425,20 +425,25 @@
         },
         "document_type": {
           "name": "document_type",
-          "type": "varchar(50)",
+          "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
           "unique": false,
-          "length": 50,
+          "length": null,
           "precision": null,
           "scale": null,
           "default": null,
           "comment": null,
           "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
+          "enumItems": [
+            "RESUME",
+            "COVER_LETTER",
+            "REFERENCES",
+            "OTHER"
+          ],
+          "mappedType": "enum"
         },
         "id": {
           "name": "id",
@@ -570,7 +575,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "now()",
+          "default": "current_timestamp",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -594,7 +599,7 @@
             "object_key"
           ],
           "composite": true,
-          "constraint": false,
+          "constraint": true,
           "keyName": "tbl_documents_bucket_object_key_unique",
           "primary": false,
           "unique": true
@@ -610,7 +615,14 @@
           "unique": true
         }
       ],
-      "checks": [],
+      "checks": [
+        {
+          "name": "tbl_documents_document_type_check",
+          "expression": "\"document_type\" in ('RESUME', 'COVER_LETTER', 'REFERENCES', 'OTHER')",
+          "definition": "check (\"document_type\" in ('RESUME', 'COVER_LETTER', 'REFERENCES', 'OTHER'))",
+          "columnName": "document_type"
+        }
+      ],
       "triggers": [],
       "foreignKeys": {
         "tbl_documents_application_id_foreign": {
@@ -644,7 +656,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "CURRENT_TIMESTAMP",
+          "default": "current_timestamp",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -664,25 +676,31 @@
           "default": null,
           "comment": null,
           "collation": null,
-          "enumItems": [],
-          "mappedType": "text"
+          "enumItems": [
+            "ENGINEERING",
+            "HR",
+            "SALES",
+            "FINANCE",
+            "IT"
+          ],
+          "mappedType": "enum"
         },
         "description": {
           "name": "description",
-          "type": "text",
+          "type": "varchar(255)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
           "unique": false,
-          "length": null,
+          "length": 255,
           "precision": null,
           "scale": null,
           "default": null,
           "comment": null,
           "collation": null,
           "enumItems": [],
-          "mappedType": "text"
+          "mappedType": "string"
         },
         "end_date": {
           "name": "end_date",
@@ -780,7 +798,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "CURRENT_TIMESTAMP",
+          "default": "current_timestamp",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -801,28 +819,14 @@
       ],
       "checks": [
         {
-          "name": "chk_tbl_job_listings_description_length",
-          "expression": "char_length(description) <= 10000",
-          "definition": "CHECK ((char_length(description) <= 10000))",
-          "columnName": "description"
+          "name": "tbl_job_listings_department_check",
+          "expression": "\"department\" in ('ENGINEERING', 'HR', 'SALES', 'FINANCE', 'IT')",
+          "definition": "check (\"department\" in ('ENGINEERING', 'HR', 'SALES', 'FINANCE', 'IT'))",
+          "columnName": "department"
         }
       ],
       "triggers": [],
-      "foreignKeys": {
-        "tbl_job_listings_department_foreign": {
-          "columnNames": [
-            "department"
-          ],
-          "constraintName": "tbl_job_listings_department_foreign",
-          "localTableName": "public.tbl_job_listings",
-          "referencedColumnNames": [
-            "name"
-          ],
-          "referencedTableName": "public.tbl_departments",
-          "updateRule": "cascade",
-          "deleteRule": "set null"
-        }
-      },
+      "foreignKeys": {},
       "comment": null
     },
     {
@@ -840,7 +844,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "CURRENT_TIMESTAMP",
+          "default": "current_timestamp",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -908,7 +912,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "CURRENT_TIMESTAMP",
+          "default": "current_timestamp",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -984,7 +988,6 @@
             "id"
           ],
           "referencedTableName": "public.tbl_users",
-          "updateRule": "cascade",
           "deleteRule": "cascade"
         }
       },
@@ -1005,7 +1008,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "CURRENT_TIMESTAMP",
+          "default": "current_timestamp",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -1110,7 +1113,7 @@
           "length": 6,
           "precision": null,
           "scale": null,
-          "default": "CURRENT_TIMESTAMP",
+          "default": "current_timestamp",
           "comment": null,
           "collation": null,
           "enumItems": [],

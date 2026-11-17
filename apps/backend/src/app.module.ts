@@ -10,6 +10,7 @@ import { JobListingModule } from './modules/job-listing.module';
 import { ApplicationFormModule } from './modules/application-form.module';
 import { PublicModule } from './modules/public.module';
 import { DocumentModule } from './modules/document.module';
+import { ApplicationStatusHistoryModule } from './modules/application-status-history.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { DocumentModule } from './modules/document.module';
     JobListingModule,
     ApplicationFormModule,
     DocumentModule,
+    ApplicationStatusHistoryModule,
     PublicModule,
   ],
   controllers: [],

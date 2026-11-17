@@ -9,6 +9,7 @@ import { JobListingEntity } from './src/entities/job-listing.entity';
 import { ApplicationFormEntity } from './src/entities/application-form.entity';
 import { PasswordResetTokenEntity } from './src/entities/password-reset-token.entity';
 import { DocumentEntity } from './src/entities/document.entity';
+import { ApplicationStatusHistoryEntity } from './src/entities/application-status-history.entity';
 
 dotenv.config({ path: path.resolve(process.cwd(), '../../.env') });
 
@@ -21,6 +22,7 @@ export default defineConfig({
     ApplicationFormEntity,
     PasswordResetTokenEntity,
     DocumentEntity,
+    ApplicationStatusHistoryEntity,
   ],
   driver: PostgreSqlDriver,
   host: process.env.DB_HOST,

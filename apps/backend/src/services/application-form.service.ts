@@ -2,6 +2,7 @@ import { BadRequestException, ConflictException, Injectable } from '@nestjs/comm
 import { BaseService } from './base.service';
 import { ApplicationFormEntity, JobStatusEnum } from '../entities/application-form.entity';
 import { ApplicationFormRepository } from '../repositories/application-form.repository';
+import { ApplicationStatusHistoryRepository } from '../repositories/application-status-history.repository';
 import { JobListingService } from './job-listing.service';
 import type { PaginatedResult } from '../utils/pagination.utils';
 import type { CreateApplicationFormDto, QueryApplicationFormDto, UpdateApplicationFormDto } from '../dtos/application-form.dto';
@@ -12,6 +13,7 @@ export class ApplicationFormService extends BaseService<ApplicationFormEntity> {
   constructor(
     protected readonly applicationFormRepo: ApplicationFormRepository,
     private readonly jobListingService: JobListingService,
+    private readonly statusHistoryRepo: ApplicationStatusHistoryRepository,
   ) {
     super(applicationFormRepo);
   }
@@ -118,9 +120,26 @@ export class ApplicationFormService extends BaseService<ApplicationFormEntity> {
   async updateStatus(
     id: string,
     status: JobStatusEnum,
+    userId: string,
+    remarks?: string,
   ): Promise<ApplicationFormEntity> {
-    await this.getById(id);
-    return this.update(id, { status });
+    const application = await this.getById(id);
+    const oldStatus = application.status;
+    if (oldStatus === status) {
+      return application;
+    }
+
+    // createOne flushes the whole unit of work, so the status change and its
+    // history row are written in a single transaction.
+    application.status = status;
+    await this.statusHistoryRepo.createOne({
+      application,
+      user: userId,
+      oldStatus,
+      newStatus: status,
+      remarks,
+    });
+    return application;
   }
 
   async findByJobId(jobId: string): Promise<ApplicationFormEntity[]> {

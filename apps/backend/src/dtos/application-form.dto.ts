@@ -116,6 +116,12 @@ export class UpdateApplicationStatusDto {
   })
   @IsNotEmpty({ message: 'status is required' })
   status!: JobStatusEnum;
+
+  @IsOptional()
+  @Transform(trimToUndefined)
+  @IsString({ message: 'remarks must be a string' })
+  @MaxLength(2000, { message: 'remarks must not exceed 2000 characters' })
+  remarks?: string;
 }
 
 export class QueryApplicationFormDto extends PaginationQueryDto {
