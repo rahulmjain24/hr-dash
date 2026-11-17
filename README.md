@@ -10,9 +10,15 @@ HR staff can review each application's documents, move it through the hiring sta
 
 ## 📸 Screenshots
 
+### HR dashboard
+
 **Applications:** search and filter every application by status, job, department, listing state, and submission date, with server-side pagination.
 
 ![Applications list with filters](docs/images/hr-dash-applications.png)
+
+**Application detail:** one page per application with the candidate's details, uploaded documents, scheduled meetings, the current status, and the full status history with who changed it and when.
+
+![Application detail page](docs/images/hr-dash-application-edit.png)
 
 <table>
   <tr>
@@ -52,6 +58,27 @@ HR staff can review each application's documents, move it through the hiring sta
     </td>
   </tr>
 </table>
+
+### Applicant portal
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <b>Open positions</b><br/>
+      Candidates browse active job listings grouped by department, without an account.<br/><br/>
+      <img src="docs/images/hr-dash-job-list.png" alt="Open positions page" />
+    </td>
+    <td width="50%" valign="top">
+      <b>Job posting</b><br/>
+      The full description with department, posting date, and application deadline.<br/><br/>
+      <img src="docs/images/hr-dash-job-post.png" alt="Job posting page" />
+    </td>
+  </tr>
+</table>
+
+**Apply:** the application form, with a required resume and up to 4 additional documents (PDF, DOC or DOCX, up to 5 MB each).
+
+![Application form](docs/images/hr-dash-apply.png)
 
 ---
 
