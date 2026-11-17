@@ -5,7 +5,7 @@ import { ApplicationFormRepository } from '../repositories/application-form.repo
 import { ApplicationStatusHistoryRepository } from '../repositories/application-status-history.repository';
 import { JobListingService } from './job-listing.service';
 import type { PaginatedResult } from '../utils/pagination.utils';
-import type { CreateApplicationFormDto, QueryApplicationFormDto, UpdateApplicationFormDto } from '../dtos/application-form.dto';
+import type { CreateApplicationFormDto, QueryApplicationFormDto } from '../dtos/application-form.dto';
 import type { SubmitApplicationDto } from '../dtos/public-application.dto';
 
 export const STATUS_TRANSITIONS: Record<JobStatusEnum, JobStatusEnum[]> = {
@@ -80,54 +80,6 @@ export class ApplicationFormService extends BaseService<ApplicationFormEntity> {
     });
   }
 
-  async updateApplication(
-    id: string,
-    dto: UpdateApplicationFormDto,
-    userId: string,
-  ): Promise<ApplicationFormEntity> {
-    if (Object.keys(dto).length === 0) {
-      throw new BadRequestException(
-        'At least one field must be provided for update',
-      );
-    }
-
-    const existing = await this.getById(id);
-
-    if (dto.email && dto.email !== existing.email) {
-      const targetJobId = existing.job?.id;
-      if (targetJobId) {
-        const duplicate = await this.applicationFormRepo.findByEmailAndJobId(
-          dto.email,
-          targetJobId,
-        );
-        if (duplicate && duplicate.id !== id) {
-          throw new ConflictException(
-            `An application with email "${dto.email}" already exists for this job listing`,
-          );
-        }
-      }
-    }
-
-    const submissonDate = dto.submissonDate ?? dto.submissionDate;
-
-    const updatePayload: Partial<ApplicationFormEntity> = {};
-    if (dto.email !== undefined) updatePayload.email = dto.email;
-    if (dto.firstName !== undefined) updatePayload.firstName = dto.firstName;
-    if (dto.lastName !== undefined) updatePayload.lastName = dto.lastName;
-    if (dto.additionalProperties !== undefined) {
-      updatePayload.additionalProperties = dto.additionalProperties;
-    }
-    if (submissonDate !== undefined) {
-      updatePayload.submissonDate = submissonDate;
-    }
-
-    if (dto.status !== undefined) {
-      this.changeStatus(existing, dto.status, userId);
-    }
-
-    return this.update(id, updatePayload);
-  }
-
   async updateStatus(
     id: string,
     status: JobStatusEnum,
@@ -169,15 +121,6 @@ export class ApplicationFormService extends BaseService<ApplicationFormEntity> {
         remarks,
       } as any),
     );
-  }
-
-  async findByJobId(jobId: string): Promise<ApplicationFormEntity[]> {
-    await this.jobListingService.getById(jobId);
-    return this.applicationFormRepo.findByJobId(jobId);
-  }
-
-  async findByStatus(status: JobStatusEnum): Promise<ApplicationFormEntity[]> {
-    return this.applicationFormRepo.findByStatus(status);
   }
 
   async findWithFilters(

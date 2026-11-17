@@ -18,9 +18,4 @@ export class ApplicationStatusHistoryController extends BaseController<Applicati
   ) {
     return this.historyService.findByApplicationId(applicationId);
   }
-
-  @Get(':id')
-  async getById(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.historyService.getById(id);
-  }
 }

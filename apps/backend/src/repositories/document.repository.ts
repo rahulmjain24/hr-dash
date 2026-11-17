@@ -16,8 +16,4 @@ export class DocumentRepository extends BaseRepository<DocumentEntity> {
       { orderBy: { createdAt: 'ASC', id: 'ASC' } },
     );
   }
-
-  async countByApplicationId(applicationId: string): Promise<number> {
-    return this.count({ application: applicationId } as FilterQuery<DocumentEntity>);
-  }
 }

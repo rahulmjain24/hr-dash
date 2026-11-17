@@ -4,8 +4,7 @@ import { InterviewEntity } from '../entities/interview.entity';
 import { InterviewRepository } from '../repositories/interview.repository';
 import { ApplicationFormService } from './application-form.service';
 import { UserService } from './user.service';
-import type { CreateInterviewDto, QueryInterviewDto } from '../dtos/interview.dto';
-import type { PaginatedResult } from '../utils/pagination.utils';
+import type { CreateInterviewDto } from '../dtos/interview.dto';
 
 @Injectable()
 export class InterviewService extends BaseService<InterviewEntity> {
@@ -36,12 +35,6 @@ export class InterviewService extends BaseService<InterviewEntity> {
       durationMinutes: dto.durationMinutes,
       meetingLink: dto.meetingLink,
     });
-  }
-
-  async findWithFilters(
-    filters?: QueryInterviewDto,
-  ): Promise<PaginatedResult<InterviewEntity>> {
-    return this.interviewRepo.findByFilters(filters ?? {});
   }
 
   async findByApplicationId(applicationId: string): Promise<InterviewEntity[]> {

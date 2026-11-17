@@ -10,20 +10,6 @@ export class LoginDto {
   password!: string;
 }
 
-export class RegisterDto {
-  @IsEmail({}, { message: 'Please provide a valid email address' })
-  email!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(8, { message: 'Password must be at least 8 characters long' })
-  password!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  name!: string;
-}
-
 export class ForgotPasswordDto {
   @Transform(({ value }: { value: unknown }) =>
     typeof value === 'string' ? value.trim() : value,

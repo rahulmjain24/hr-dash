@@ -308,12 +308,12 @@ All routes except `/auth/*` and `/public/*` require a valid auth cookie. Routes 
 |---|---|
 | `/auth` | `POST /login`, `GET /logout`, `POST /forgot-password`, `GET /reset-password/:token`, `POST /reset-password` |
 | `/user` | `GET /` (Admin), `GET /:id`, `POST /create` (Admin), `PATCH /:id` (Admin), `DELETE /:id` (Admin) |
-| `/departments` | `GET /`, `POST /` (Admin), `PATCH /update-description/:id` (Admin) |
+| `/departments` | `GET /` |
 | `/job-listings` | `GET /`, `GET /:id`, `POST /` (Admin), `PATCH /:id` (Admin), `PATCH /:id/set-inactive` (Admin) |
-| `/application-forms` | `GET /`, `GET /job/:jobId`, `GET /:id`, `POST /` (Admin), `PATCH /:id` (Admin), `PATCH /:id/status` |
-| `/application-status-history` | `GET /application/:applicationId`, `GET /:id` |
-| `/documents` | `GET /application/:applicationId`, `POST /application/:applicationId` (Admin), `GET /:id`, `GET /:id/download`, `DELETE /:id` (Admin) |
-| `/interviews` | `GET /`, `GET /application/:applicationId`, `GET /:id`, `POST /` (Admin) |
+| `/application-forms` | `GET /`, `GET /:id`, `PATCH /:id/status` |
+| `/application-status-history` | `GET /application/:applicationId` |
+| `/documents` | `GET /application/:applicationId`, `GET /:id/download` |
+| `/interviews` | `GET /application/:applicationId`, `POST /` (Admin) |
 | `/public` | `GET /job-listings`, `GET /job-listings/:id`, `POST /documents`, `POST /applications` |
 
 ---

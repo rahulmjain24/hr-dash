@@ -10,12 +10,6 @@ export class ApplicationStatusHistoryRepository extends BaseRepository<Applicati
     super(em, ApplicationStatusHistoryEntity);
   }
 
-  override async findById(id: string): Promise<ApplicationStatusHistoryEntity | null> {
-    return this.findOne({ id } as FilterQuery<ApplicationStatusHistoryEntity>, {
-      populate: ['user'],
-    });
-  }
-
   async findByApplicationId(
     applicationId: string,
   ): Promise<ApplicationStatusHistoryEntity[]> {

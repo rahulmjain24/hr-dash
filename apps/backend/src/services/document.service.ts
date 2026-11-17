@@ -17,7 +17,6 @@ import { DocumentStatusEnum } from '../dtos/document.dto';
 import type { SubmitApplicationDto } from '../dtos/public-application.dto';
 
 export const MAX_DOCUMENT_SIZE_BYTES = 5 * 1024 * 1024;
-export const MAX_DOCUMENTS_PER_APPLICATION = 5;
 
 const PDF_MAGIC = Buffer.from('%PDF-');
 const ZIP_MAGIC = Buffer.from([0x50, 0x4b, 0x03, 0x04]);
@@ -157,50 +156,6 @@ export class DocumentService extends BaseService<DocumentEntity> {
     return application;
   }
 
-  // direct upload for team memebrs
-  async upload(
-    applicationId: string,
-    file: UploadedDocumentFile | undefined,
-    documentType: DocumentTypeEnum,
-  ): Promise<DocumentEntity> {
-    const validated = this.validateFile(file);
-
-    const application = await this.applicationFormService.getById(applicationId);
-    const existingCount =
-      await this.documentRepo.countByApplicationId(applicationId);
-    if (existingCount >= MAX_DOCUMENTS_PER_APPLICATION) {
-      throw new BadRequestException(
-        `An application can have at most ${MAX_DOCUMENTS_PER_APPLICATION} documents`,
-      );
-    }
-
-    const bucket = this.storageService.bucket;
-    const objectKey = `applications/${applicationId}/${randomUUID()}${validated.extension}`;
-    await this.storageService.upload(
-      bucket,
-      objectKey,
-      validated.buffer,
-      validated.mimeType,
-    );
-
-    try {
-      return await this.create({
-        application,
-        documentType,
-        status: DocumentStatusEnum.UPLOADED,
-        bucket,
-        objectKey,
-        originalFilename: validated.originalFilename,
-        mimeType: validated.mimeType,
-        sizeBytes: validated.buffer.length,
-        checksum: validated.checksum,
-      });
-    } catch (error) {
-      await this.removeQuietly(bucket, objectKey);
-      throw error;
-    }
-  }
-
   private validateFile(file: UploadedDocumentFile | undefined) {
     if (!file?.buffer?.length) {
       throw new BadRequestException('A non-empty file is required');
@@ -224,7 +179,6 @@ export class DocumentService extends BaseService<DocumentEntity> {
     return {
       buffer: file.buffer,
       originalFilename,
-      extension,
       mimeType: format.mimeType,
       checksum: createHash('sha256').update(file.buffer).digest('hex'),
     };
@@ -247,11 +201,5 @@ export class DocumentService extends BaseService<DocumentEntity> {
       document.objectKey,
     );
     return { document, stream };
-  }
-
-  async deleteDocument(id: string): Promise<void> {
-    const document = await this.getById(id);
-    await this.storageService.remove(document.bucket, document.objectKey);
-    await this.delete(id);
   }
 }

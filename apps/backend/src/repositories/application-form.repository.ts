@@ -38,22 +38,11 @@ export class ApplicationFormRepository extends BaseRepository<ApplicationFormEnt
     });
   }
 
-  async findByJobId(jobId: string): Promise<ApplicationFormEntity[]> {
-    return this.find(
-      { job: jobId } as FilterQuery<ApplicationFormEntity>,
-      { populate: ['job'] },
-    );
-  }
-
   async findByEmailAndJobId(
     email: string,
     jobId: string,
   ): Promise<ApplicationFormEntity | null> {
     return this.findOne({ email, job: jobId } as FilterQuery<ApplicationFormEntity>);
-  }
-
-  async findByStatus(status: JobStatusEnum): Promise<ApplicationFormEntity[]> {
-    return this.find({ status }, { populate: ['job'] });
   }
 
   async findByFilters(

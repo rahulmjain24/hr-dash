@@ -7,13 +7,12 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import { BaseController } from './base.controller';
 import { InterviewEntity } from '../entities/interview.entity';
 import { InterviewService } from '../services/interview.service';
-import { CreateInterviewDto, QueryInterviewDto } from '../dtos/interview.dto';
+import { CreateInterviewDto } from '../dtos/interview.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RolesGuard } from '../guards/roles.guard';
 import { Role, Roles } from '../decorators/roles.decorator';
@@ -25,21 +24,11 @@ export class InterviewController extends BaseController<InterviewEntity> {
     super(interviewService);
   }
 
-  @Get()
-  async getAll(@Query() query?: QueryInterviewDto) {
-    return this.interviewService.findWithFilters(query);
-  }
-
   @Get('application/:applicationId')
   async getByApplicationId(
     @Param('applicationId', new ParseUUIDPipe()) applicationId: string,
   ) {
     return this.interviewService.findByApplicationId(applicationId);
-  }
-
-  @Get(':id')
-  async getById(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.interviewService.getById(id);
   }
 
   @Post()

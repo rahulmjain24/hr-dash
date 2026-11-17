@@ -1,7 +1,6 @@
 import { Transform, Type } from 'class-transformer';
 import {
   IsDate,
-  IsDateString,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -12,7 +11,6 @@ import {
   Min,
   MinDate,
 } from 'class-validator';
-import { PaginationQueryDto } from './pagination.dto';
 
 const trimToUndefined = ({ value }: { value: unknown }) => {
   if (typeof value !== 'string') return value;
@@ -53,28 +51,4 @@ export class CreateInterviewDto {
   )
   @MaxLength(2048, { message: 'meetingLink must not exceed 2048 characters' })
   meetingLink?: string;
-}
-
-export class QueryInterviewDto extends PaginationQueryDto {
-  @IsOptional()
-  @Transform(trimToUndefined)
-  @IsUUID('all', { message: 'applicationId must be a valid UUID' })
-  applicationId?: string;
-
-  @IsOptional()
-  @Transform(trimToUndefined)
-  @IsUUID('all', { message: 'interviewerUserId must be a valid UUID' })
-  interviewerUserId?: string;
-
-  /** Scheduled on or after this date (YYYY-MM-DD or ISO 8601). */
-  @IsOptional()
-  @Transform(trimToUndefined)
-  @IsDateString({}, { message: 'from must be a valid ISO 8601 date' })
-  from?: string;
-
-  /** Scheduled on or before this date (YYYY-MM-DD is inclusive of the whole day). */
-  @IsOptional()
-  @Transform(trimToUndefined)
-  @IsDateString({}, { message: 'to must be a valid ISO 8601 date' })
-  to?: string;
 }

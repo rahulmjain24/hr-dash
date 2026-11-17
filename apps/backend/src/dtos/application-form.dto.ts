@@ -67,49 +67,6 @@ export class CreateApplicationFormDto {
   submissionDate?: Date;
 }
 
-export class UpdateApplicationFormDto {
-  @IsOptional()
-  @Transform(trim)
-  @IsEmail({}, { message: 'Please provide a valid email address' })
-  email?: string;
-
-  @IsOptional()
-  @Transform(trim)
-  @IsString()
-  @IsNotEmpty({ message: 'First name cannot be empty' })
-  @Length(1, 255, {
-    message: 'First name must be between 1 and 255 characters',
-  })
-  firstName?: string;
-
-  @IsOptional()
-  @Transform(trim)
-  @IsString()
-  @IsNotEmpty({ message: 'Last name cannot be empty' })
-  @Length(1, 255, { message: 'Last name must be between 1 and 255 characters' })
-  lastName?: string;
-
-  @IsOptional()
-  @IsEnum(JobStatusEnum, {
-    message: 'status must be a valid JobStatusEnum value',
-  })
-  status?: JobStatusEnum;
-
-  @IsOptional()
-  @IsObject({ message: 'additionalProperties must be an object' })
-  additionalProperties?: Record<string, any>;
-
-  @IsOptional()
-  @Type(() => Date)
-  @IsDate({ message: 'submissonDate must be a valid ISO 8601 date' })
-  submissonDate?: Date;
-
-  @IsOptional()
-  @Type(() => Date)
-  @IsDate({ message: 'submissionDate must be a valid ISO 8601 date' })
-  submissionDate?: Date;
-}
-
 export class UpdateApplicationStatusDto {
   @IsEnum(JobStatusEnum, {
     message: 'status must be a valid JobStatusEnum value',
@@ -125,7 +82,6 @@ export class UpdateApplicationStatusDto {
 }
 
 export class QueryApplicationFormDto extends PaginationQueryDto {
-  /** Matches first name, last name or email (case-insensitive). */
   @IsOptional()
   @Transform(trimToUndefined)
   @IsString()

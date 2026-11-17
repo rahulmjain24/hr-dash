@@ -63,11 +63,4 @@ export class AuthController {
     await this.passwordResetService.resetPassword(dto.token, dto.password);
     return { message: 'Password reset successfully' };
   }
-
-  // disabling register feature
-  // @Post('register')
-  // @HttpCode(HttpStatus.CREATED)
-  // async register(@Body() registerDto: RegisterDto) {
-  //   return this.authService.register(registerDto);
-  // }
 }
