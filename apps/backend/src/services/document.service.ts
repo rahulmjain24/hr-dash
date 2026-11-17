@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  HttpException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -121,32 +122,34 @@ export class DocumentService extends BaseService<DocumentEntity> {
       throw new BadRequestException('A resume is required to submit an application');
     }
 
-    const application = await this.applicationFormService.submitApplication(dto);
-
-    const movedKeys: string[] = [];
+    const copiedKeys: string[] = [];
+    let application: ApplicationFormEntity;
     try {
-      for (const item of staged) {
-        const objectKey = `applications/${application.id}/${item.uploadId}${item.extension}`;
-        await this.storageService.copy(tmpBucket, item.uploadId, bucket, objectKey);
-        movedKeys.push(objectKey);
-        await this.create({
-          application,
-          documentType: item.documentType,
-          status: DocumentStatusEnum.UPLOADED,
-          bucket,
-          objectKey,
-          originalFilename: item.originalFilename,
-          mimeType: ALLOWED_FORMATS[item.extension].mimeType,
-          sizeBytes: item.info.size,
-          checksum: item.info.metadata.sha256,
-        });
-      }
+      application = await this.documentRepo.getEntityManager().transactional(async () => {
+        const created = await this.applicationFormService.submitApplication(dto);
+
+        for (const item of staged) {
+          const objectKey = `applications/${created.id}/${item.uploadId}${item.extension}`;
+          await this.storageService.copy(tmpBucket, item.uploadId, bucket, objectKey);
+          copiedKeys.push(objectKey);
+          await this.create({
+            application: created,
+            documentType: item.documentType,
+            status: DocumentStatusEnum.UPLOADED,
+            bucket,
+            objectKey,
+            originalFilename: item.originalFilename,
+            mimeType: ALLOWED_FORMATS[item.extension].mimeType,
+            sizeBytes: item.info.size,
+            checksum: item.info.metadata.sha256,
+          });
+        }
+        return created;
+      });
     } catch (error) {
-      this.logger.error(
-        `Attaching documents to application ${application.id} failed: ${getErrorMessage(error)}`,
-      );
-      await Promise.all(movedKeys.map((key) => this.removeQuietly(bucket, key)));
-      await this.applicationFormService.delete(application.id);
+      await Promise.all(copiedKeys.map((key) => this.removeQuietly(bucket, key)));
+      if (error instanceof HttpException) throw error;
+      this.logger.error(`Submitting application failed: ${getErrorMessage(error)}`);
       throw new InternalServerErrorException(
         'Could not save your documents. Please try submitting again.',
       );
