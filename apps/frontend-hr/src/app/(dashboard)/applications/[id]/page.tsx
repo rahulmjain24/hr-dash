@@ -3,22 +3,26 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { useParams } from 'next/navigation';
 import { api, getErrorMessage } from '@/lib/api';
-import { formatDate } from '@/lib/format';
+import { formatDate, formatFileSize } from '@/lib/format';
 import { useFetch } from '@/lib/useFetch';
 import {
+  DOCUMENT_TYPE_LABELS,
   STATUS_LABELS,
   departmentLabel,
   isListingActive,
   type Application,
+  type ApplicationDocument,
   type ApplicationStatus,
 } from '@/lib/types';
 import StatusBadge from '@/components/StatusBadge';
+import { DownloadIcon, FileTextIcon } from '@/components/icons';
 import {
   Avatar,
   Breadcrumb,
   ErrorAlert,
   SuccessAlert,
   btnPrimary,
+  btnSmall,
   cardClass,
   labelClass,
   linkClass,
@@ -65,6 +69,81 @@ function DetailRow({ label, children }: { label: string; children: ReactNode }) 
       <dt className="text-sm font-medium text-gray-600">{label}</dt>
       <dd className="min-w-0 text-sm text-gray-900">{children}</dd>
     </div>
+  );
+}
+
+function Documents({ applicationId }: { applicationId: string }) {
+  const documents = useFetch<ApplicationDocument[]>(`/documents/application/${applicationId}`);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [error, setError] = useState('');
+
+  const download = async (doc: ApplicationDocument) => {
+    setDownloadingId(doc.id);
+    setError('');
+    try {
+      // Fetched through the API client so the session cookie is sent and failures show inline.
+      const res = await api.get<Blob>(`/documents/${doc.id}/download`, { responseType: 'blob' });
+      const url = URL.createObjectURL(res.data);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = doc.originalFilename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      setError(`Failed to download ${doc.originalFilename}. Please try again.`);
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
+  return (
+    <section className={`${cardClass} px-5 py-2`}>
+      <h2 className="pt-3 text-base font-semibold">Documents</h2>
+      {documents.loading && <p className="py-3 text-sm text-gray-600">Loading documents...</p>}
+      {documents.error && (
+        <div className="py-3">
+          <ErrorAlert>{documents.error}</ErrorAlert>
+        </div>
+      )}
+      {error && (
+        <div className="pt-3">
+          <ErrorAlert>{error}</ErrorAlert>
+        </div>
+      )}
+      {documents.data?.length === 0 && (
+        <p className="py-3 text-sm text-gray-600">No documents are attached to this application.</p>
+      )}
+      {documents.data && documents.data.length > 0 && (
+        <ul className="divide-y divide-gray-200">
+          {documents.data.map((doc) => (
+            <li key={doc.id} className="flex items-center gap-3 py-3">
+              <FileTextIcon size={18} className="flex-none text-gray-500" />
+              <div className="flex min-w-0 flex-1 flex-col">
+                <span className="truncate text-sm text-gray-900" title={doc.originalFilename}>
+                  {doc.originalFilename}
+                </span>
+                <span className="text-xs text-gray-600">
+                  {DOCUMENT_TYPE_LABELS[doc.documentType] ?? doc.documentType} ·{' '}
+                  {formatFileSize(doc.sizeBytes)}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => download(doc)}
+                disabled={downloadingId !== null}
+                aria-label={`Download ${doc.originalFilename}`}
+                className={`${btnSmall} flex-none`}
+              >
+                <DownloadIcon size={14} />
+                {downloadingId === doc.id ? 'Downloading...' : 'Download'}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 
@@ -193,6 +272,8 @@ export default function ApplicationDetailPage() {
                   <DetailRow label="Submitted">{formatDate(app.submissonDate)}</DetailRow>
                 </dl>
               </section>
+
+              <Documents applicationId={app.id} />
 
               <section className={`${cardClass} px-5 py-2`}>
                 <h2 className="pt-3 text-base font-semibold">Additional details</h2>

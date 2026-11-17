@@ -1,9 +1,10 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import Link from 'next/link';
 import { submitApplication, type ApplyState } from './actions';
 import { CheckCircleIcon } from '@/components/icons';
+import DocumentUpload from './DocumentUpload';
 import {
   ErrorAlert,
   Required,
@@ -27,6 +28,10 @@ export default function ApplicationForm({ jobId, jobTitle }: { jobId: string; jo
     initialState,
   );
   const values = state.values ?? {};
+  const [resumeReady, setResumeReady] = useState(false);
+  const [resumeBusy, setResumeBusy] = useState(false);
+  const [othersBusy, setOthersBusy] = useState(false);
+  const uploading = resumeBusy || othersBusy;
 
   if (state.status === 'success') {
     return (
@@ -164,6 +169,26 @@ export default function ApplicationForm({ jobId, jobTitle }: { jobId: string; jo
           />
         </div>
 
+        <DocumentUpload
+          id="a-resume"
+          label="Resume"
+          name="resumeId"
+          documentType="RESUME"
+          maxFiles={1}
+          required
+          onBusyChange={setResumeBusy}
+          onCountChange={(count) => setResumeReady(count > 0)}
+        />
+
+        <DocumentUpload
+          id="a-documents"
+          label="Additional documents"
+          name="otherDocumentIds"
+          documentType="OTHER"
+          maxFiles={4}
+          onBusyChange={setOthersBusy}
+        />
+
         {state.status === 'error' && <ErrorAlert>{state.message}</ErrorAlert>}
       </div>
 
@@ -171,8 +196,13 @@ export default function ApplicationForm({ jobId, jobTitle }: { jobId: string; jo
         <Link href={`/jobs/${jobId}`} className={btnSecondary}>
           Cancel
         </Link>
-        <button type="submit" disabled={isPending} className={btnPrimary}>
-          {isPending ? 'Submitting...' : 'Submit application'}
+        <button
+          type="submit"
+          disabled={isPending || uploading || !resumeReady}
+          title={!resumeReady && !uploading ? 'Upload your resume to submit' : undefined}
+          className={btnPrimary}
+        >
+          {isPending ? 'Submitting...' : uploading ? 'Uploading...' : 'Submit application'}
         </button>
       </div>
     </form>

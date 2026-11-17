@@ -48,3 +48,17 @@ export const CheckCircleIcon = (props: IconProps) => (
     <polyline points="22 4 12 14.01 9 11.01" />
   </Icon>
 );
+
+export const FileIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+  </Icon>
+);
+
+export const XIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </Icon>
+);

@@ -72,6 +72,23 @@ export interface Application {
   createdAt: string;
 }
 
+export type DocumentType = 'RESUME' | 'COVER_LETTER' | 'REFERENCES' | 'OTHER';
+
+export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
+  RESUME: 'Resume',
+  COVER_LETTER: 'Cover letter',
+  REFERENCES: 'References',
+  OTHER: 'Other',
+};
+
+export interface ApplicationDocument {
+  id: string;
+  documentType: DocumentType;
+  originalFilename: string;
+  mimeType: string;
+  sizeBytes: number;
+}
+
 export interface Paginated<T> {
   data: T[];
   meta: { total: number; page: number; limit: number; totalPages: number };
