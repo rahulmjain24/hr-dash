@@ -11,3 +11,8 @@ export function formatDate(value?: string | null): string {
   if (Number.isNaN(date.getTime())) return '';
   return dateFormat.format(date);
 }
+
+export function formatFileSize(bytes: number): string {
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}

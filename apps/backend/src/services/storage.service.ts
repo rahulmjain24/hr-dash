@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Client, CopyDestinationOptions, CopySourceOptions } from 'minio';
 import type { Readable } from 'stream';
 import type { EnvironmentVariables } from '../config/env.validation';
+import { getErrorMessage } from '../utils/error.utils';
 
 const TMP_EXPIRY_DAYS = 1;
 
@@ -45,7 +46,7 @@ export class StorageService implements OnModuleInit {
         ],
       });
     } catch (error) {
-      this.logger.error(`Could not set up storage buckets: ${(error as Error).message}`);
+      this.logger.error(`Could not set up storage buckets: ${getErrorMessage(error)}`);
     }
   }
 

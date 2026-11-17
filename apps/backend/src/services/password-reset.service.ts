@@ -1,12 +1,14 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createHash, randomBytes } from 'crypto';
-import * as bcrypt from 'bcrypt';
 import { UserService } from './user.service';
 import { MailService } from './mail.service';
 import { PasswordResetTokenRepository } from 'src/repositories/password-reset-token.repository';
 import { PasswordResetTokenEntity } from 'src/entities/password-reset-token.entity';
 import { EnvironmentVariables } from 'src/config/env.validation';
+import { generateToken, hashPassword, sha256Hex } from 'src/utils/crypto.utils';
+import { minutesFromNow } from 'src/utils/date.utils';
+import { getErrorStack } from 'src/utils/error.utils';
+import { stripTrailingSlashes } from 'src/utils/string.utils';
 
 export const RESET_TOKEN_TTL_MINUTES = 30;
 
@@ -21,9 +23,9 @@ export class PasswordResetService {
     private readonly tokenRepo: PasswordResetTokenRepository,
     configService: ConfigService<EnvironmentVariables, true>,
   ) {
-    this.frontendUrl = configService
-      .get('FRONTEND_URL', { infer: true })
-      .replace(/\/+$/, '');
+    this.frontendUrl = stripTrailingSlashes(
+      configService.get('FRONTEND_URL', { infer: true }),
+    );
   }
 
   async requestReset(email: string): Promise<void> {
@@ -33,11 +35,11 @@ export class PasswordResetService {
     // Only the most recent link stays valid
     await this.tokenRepo.invalidateForUser(user.id);
 
-    const token = randomBytes(32).toString('hex');
+    const token = generateToken();
     await this.tokenRepo.createOne({
       user,
-      tokenHash: this.hash(token),
-      expiresAt: new Date(Date.now() + RESET_TOKEN_TTL_MINUTES * 60 * 1000),
+      tokenHash: sha256Hex(token),
+      expiresAt: minutesFromNow(RESET_TOKEN_TTL_MINUTES),
     });
 
     const resetUrl = `${this.frontendUrl}/reset-password?token=${token}`;
@@ -46,7 +48,7 @@ export class PasswordResetService {
     } catch (err) {
       this.logger.error(
         `Failed to send password reset email to ${user.email}`,
-        err instanceof Error ? err.stack : String(err),
+        getErrorStack(err),
       );
     }
   }
@@ -61,20 +63,16 @@ export class PasswordResetService {
     const userId = resetToken.user.id;
 
     await this.userService.update(userId, {
-      password: await bcrypt.hash(password, 10),
+      password: await hashPassword(password),
     });
     await this.tokenRepo.invalidateForUser(userId);
   }
 
   private async findUsableOrFail(token: string): Promise<PasswordResetTokenEntity> {
-    const resetToken = await this.tokenRepo.findUsableByHash(this.hash(token));
+    const resetToken = await this.tokenRepo.findUsableByHash(sha256Hex(token));
     if (!resetToken) {
       throw new BadRequestException('This reset link has expired or was already used');
     }
     return resetToken;
-  }
-
-  private hash(token: string): string {
-    return createHash('sha256').update(token).digest('hex');
   }
 }

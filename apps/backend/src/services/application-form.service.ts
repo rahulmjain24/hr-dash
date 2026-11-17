@@ -7,6 +7,7 @@ import { JobListingService } from './job-listing.service';
 import type { PaginatedResult } from '../utils/pagination.utils';
 import type { CreateApplicationFormDto, QueryApplicationFormDto } from '../dtos/application-form.dto';
 import type { SubmitApplicationDto } from '../dtos/public-application.dto';
+import { isEmptyObject, omitUndefined } from '../utils/object.utils';
 
 export const STATUS_TRANSITIONS: Record<JobStatusEnum, JobStatusEnum[]> = {
   [JobStatusEnum.APPLIED]: [JobStatusEnum.REVIEWING],
@@ -65,18 +66,16 @@ export class ApplicationFormService extends BaseService<ApplicationFormEntity> {
     await this.jobListingService.getOpenListingById(dto.jobId);
 
     const { jobId, firstName, lastName, email, documentIds, ...extra } = dto;
-    const additionalProperties = Object.fromEntries(
-      Object.entries(extra).filter(([, value]) => value !== undefined),
-    );
+    const additionalProperties = omitUndefined(extra);
 
     return this.createApplication({
       jobId,
       firstName,
       lastName,
       email,
-      additionalProperties: Object.keys(additionalProperties).length
-        ? additionalProperties
-        : undefined,
+      additionalProperties: isEmptyObject(additionalProperties)
+        ? undefined
+        : additionalProperties,
     });
   }
 

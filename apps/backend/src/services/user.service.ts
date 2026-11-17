@@ -3,7 +3,8 @@ import { BaseService } from './base.service';
 import { UserEntity } from 'src/entities/user.entity';
 import { UserRepository } from 'src/repositories/user.repository';
 import { CreateUserDto, UpdateUserDto } from 'src/dtos/user.dto';
-import * as bcrypt from 'bcrypt';
+import { hashPassword } from 'src/utils/crypto.utils';
+import { isEmptyObject } from 'src/utils/object.utils';
 
 @Injectable()
 export class UserService extends BaseService<UserEntity> {
@@ -21,8 +22,7 @@ export class UserService extends BaseService<UserEntity> {
       throw new ConflictException('Email already in use');
     }
 
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(createUserDto.password, saltRounds);
+    const hashedPassword = await hashPassword(createUserDto.password);
 
     const newUser = await this.create({
       ...createUserDto,
@@ -52,10 +52,10 @@ export class UserService extends BaseService<UserEntity> {
     }
 
     if (dto.password !== undefined) {
-      values.password = await bcrypt.hash(dto.password, 10);
+      values.password = await hashPassword(dto.password);
     }
 
-    if (Object.keys(values).length === 0) {
+    if (isEmptyObject(values)) {
       throw new BadRequestException('At least one field must be provided for update');
     }
 

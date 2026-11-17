@@ -11,6 +11,7 @@ import { DocumentEntity } from '../entities/document.entity';
 import { DocumentService } from '../services/document.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RolesGuard } from '../guards/roles.guard';
+import { attachmentDisposition } from '../utils/file.utils';
 
 @Controller('documents')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -32,7 +33,7 @@ export class DocumentController extends BaseController<DocumentEntity> {
     return new StreamableFile(stream, {
       type: document.mimeType,
       length: document.sizeBytes,
-      disposition: `attachment; filename*=UTF-8''${encodeURIComponent(document.originalFilename)}`,
+      disposition: attachmentDisposition(document.originalFilename),
     });
   }
 }

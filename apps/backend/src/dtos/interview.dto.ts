@@ -11,12 +11,8 @@ import {
   Min,
   MinDate,
 } from 'class-validator';
-
-const trimToUndefined = ({ value }: { value: unknown }) => {
-  if (typeof value !== 'string') return value;
-  const trimmed = value.trim();
-  return trimmed === '' ? undefined : trimmed;
-};
+import { trimToUndefined } from '../utils/transform.utils';
+import { HTTP_URL_OPTIONS } from '../utils/validation.utils';
 
 export const MAX_INTERVIEW_DURATION_MINUTES = 480;
 
@@ -45,10 +41,7 @@ export class CreateInterviewDto {
 
   @IsOptional()
   @Transform(trimToUndefined)
-  @IsUrl(
-    { protocols: ['http', 'https'], require_protocol: true },
-    { message: 'meetingLink must be a valid http(s) URL' },
-  )
+  @IsUrl(HTTP_URL_OPTIONS, { message: 'meetingLink must be a valid http(s) URL' })
   @MaxLength(2048, { message: 'meetingLink must not exceed 2048 characters' })
   meetingLink?: string;
 }

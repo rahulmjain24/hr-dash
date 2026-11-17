@@ -3,7 +3,7 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { useParams } from 'next/navigation';
 import { api, getErrorMessage } from '@/lib/api';
-import { formatDate, formatDateTime, formatFileSize } from '@/lib/format';
+import { formatDate, formatDateTime, formatFileSize, humanizeKey } from '@/lib/format';
 import { useFetch } from '@/lib/useFetch';
 import {
   DOCUMENT_TYPE_LABELS,
@@ -33,16 +33,6 @@ import {
   selectClass,
   textareaClass,
 } from '@/components/ui';
-
-/** Turns a key like "linkedinUrl" or "years_experience" into "Linkedin url" / "Years experience". */
-function humanizeKey(key: string): string {
-  const words = key
-    .replace(/[_-]+/g, ' ')
-    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
-    .trim()
-    .toLowerCase();
-  return words.charAt(0).toUpperCase() + words.slice(1);
-}
 
 function renderValue(value: unknown): ReactNode {
   if (value === null || value === undefined || value === '') return '—';

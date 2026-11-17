@@ -3,6 +3,8 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import type { FilterQuery } from '@mikro-orm/core';
 import { BaseRepository } from './base.repository';
 import { JobListingEntity } from 'src/entities/job-listing.entity';
+import { startOfUtcDay } from 'src/utils/date.utils';
+import { isActiveFilter } from 'src/utils/query.utils';
 
 @Injectable()
 export class JobListingRepository extends BaseRepository<JobListingEntity> {
@@ -22,13 +24,11 @@ export class JobListingRepository extends BaseRepository<JobListingEntity> {
 
   private openFilter(): FilterQuery<JobListingEntity> {
     const now = new Date();
-    const today = new Date(
-      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-    );
+    const today = startOfUtcDay(now);
 
     return {
       $and: [
-        { $or: [{ isActive: true }, { isActive: null }] },
+        isActiveFilter(),
         { $or: [{ startDate: null }, { startDate: { $lte: now } }] },
         { $or: [{ endDate: null }, { endDate: { $gte: today } }] },
       ],

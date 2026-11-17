@@ -33,19 +33,19 @@ export function formatDateTime(value?: string | null): string {
   return dateTimeFormat.format(date);
 }
 
+const pad = (n: number) => String(n).padStart(2, '0');
+
 export const toDateInput = (value?: string | null) => (value ? value.slice(0, 10) : '');
 
 export function toLocalDay(value?: string | null): string {
   if (!value) return '';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '';
-  const pad = (n: number) => String(n).padStart(2, '0');
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
 /** Local "YYYY-MM-DDTHH:mm" value for a datetime-local input. */
 export function toDateTimeLocalInput(date: Date): string {
-  const pad = (n: number) => String(n).padStart(2, '0');
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
@@ -70,4 +70,14 @@ export function endOfLocalDay(day: string): string {
 export function formatFileSize(bytes: number): string {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/** Turns a key like "linkedinUrl" or "years_experience" into "Linkedin url" / "Years experience". */
+export function humanizeKey(key: string): string {
+  const words = key
+    .replace(/[_-]+/g, ' ')
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .trim()
+    .toLowerCase();
+  return words.charAt(0).toUpperCase() + words.slice(1);
 }

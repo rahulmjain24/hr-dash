@@ -17,3 +17,7 @@ export function endOfExclusive(value: string): Date {
   }
   return date;
 }
+
+export function isActiveFilter() {
+  return { $or: [{ isActive: true }, { isActive: null }] };
+}

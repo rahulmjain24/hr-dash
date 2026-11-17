@@ -5,6 +5,7 @@ import { JobListingRepository } from 'src/repositories/job-listing.repository';
 import { DepartmentService } from './department.service';
 import type { DepartmentNameEnum } from 'src/entities/department.entity';
 import type { CreateJobListingDto, UpdateJobListingDto } from 'src/dtos/job-listing.dto';
+import { isEmptyObject } from 'src/utils/object.utils';
 
 @Injectable()
 export class JobListingService extends BaseService<JobListingEntity> {
@@ -25,7 +26,7 @@ export class JobListingService extends BaseService<JobListingEntity> {
     id: string,
     dto: UpdateJobListingDto,
   ): Promise<JobListingEntity> {
-    if (Object.keys(dto).length === 0) {
+    if (isEmptyObject(dto)) {
       throw new BadRequestException(
         'At least one field must be provided for update',
       );

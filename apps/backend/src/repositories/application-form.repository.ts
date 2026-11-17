@@ -4,7 +4,8 @@ import type { FilterQuery } from '@mikro-orm/core';
 import { BaseRepository } from './base.repository';
 import { ApplicationFormEntity, JobStatusEnum } from '../entities/application-form.entity';
 import { DepartmentNameEnum } from '../entities/department.entity';
-import { endOfExclusive, escapeLike, startOf } from '../utils/query.utils';
+import { endOfExclusive, escapeLike, isActiveFilter, startOf } from '../utils/query.utils';
+import { splitWords } from '../utils/string.utils';
 import {
   type PaginatedResult,
   type PaginationParams,
@@ -52,7 +53,7 @@ export class ApplicationFormRepository extends BaseRepository<ApplicationFormEnt
 
     if (filters.search) {
       // Every word must match a name or the email, so "jane doe" finds Jane Doe.
-      for (const term of filters.search.split(/\s+/).filter(Boolean)) {
+      for (const term of splitWords(filters.search)) {
         const pattern = `%${escapeLike(term)}%`;
         conditions.push({
           $or: [
@@ -73,9 +74,7 @@ export class ApplicationFormRepository extends BaseRepository<ApplicationFormEnt
       conditions.push({ job: { department: filters.department } });
     }
     if (filters.jobState === 'active') {
-      conditions.push({
-        job: { $or: [{ isActive: true }, { isActive: null }] },
-      });
+      conditions.push({ job: isActiveFilter() });
     } else if (filters.jobState === 'closed') {
       conditions.push({ job: { isActive: false } });
     }

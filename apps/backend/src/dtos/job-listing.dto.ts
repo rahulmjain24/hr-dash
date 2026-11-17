@@ -1,34 +1,8 @@
 import { Transform, Type } from 'class-transformer';
-import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString, Length, MaxLength, ValidateIf, registerDecorator, type ValidationArguments, type ValidationOptions } from 'class-validator';
+import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString, Length, MaxLength, ValidateIf } from 'class-validator';
 import { DepartmentNameEnum } from 'src/entities/department.entity';
-
-const trim = ({ value }: { value: unknown }) =>
-  typeof value === 'string' ? value.trim() : value;
-
-function IsOnOrAfter(property: string, validationOptions?: ValidationOptions) {
-  return (object: object, propertyName: string) => {
-    registerDecorator({
-      name: 'isOnOrAfter',
-      target: object.constructor,
-      propertyName,
-      constraints: [property],
-      options: validationOptions,
-      validator: {
-        validate(value: unknown, args: ValidationArguments) {
-          const related = (args.object as Record<string, unknown>)[
-            args.constraints[0]
-          ];
-          if (!(value instanceof Date) || !(related instanceof Date))
-            return true;
-          return value.getTime() >= related.getTime();
-        },
-        defaultMessage(args: ValidationArguments) {
-          return `${args.property} must be on or after ${args.constraints[0]}`;
-        },
-      },
-    });
-  };
-}
+import { trim } from 'src/utils/transform.utils';
+import { IsOnOrAfter } from 'src/utils/validation.utils';
 
 export class CreateJobListingDto {
   @Transform(trim)

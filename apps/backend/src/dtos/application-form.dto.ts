@@ -3,15 +3,7 @@ import { IsDate, IsDateString, IsEmail, IsEnum, IsIn, IsNotEmpty, IsObject, IsOp
 import { JobStatusEnum } from '../entities/application-form.entity';
 import { DepartmentNameEnum } from '../entities/department.entity';
 import { PaginationQueryDto } from './pagination.dto';
-
-const trim = ({ value }: { value: unknown }) =>
-  typeof value === 'string' ? value.trim() : value;
-
-const trimToUndefined = ({ value }: { value: unknown }) => {
-  if (typeof value !== 'string') return value;
-  const trimmed = value.trim();
-  return trimmed === '' ? undefined : trimmed;
-};
+import { trim, trimToUndefined } from '../utils/transform.utils';
 
 export const JOB_STATES = ['active', 'closed'] as const;
 export type JobState = (typeof JOB_STATES)[number];

@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFetch } from "@/lib/useFetch";
+import { pageItems } from "@/lib/pagination";
 import { endOfLocalDay, formatDate, startOfLocalDay } from "@/lib/format";
 import {
   DEPARTMENT_LABELS,
@@ -76,26 +77,6 @@ const JOB_STATE_LABELS: Record<string, string> = {
   active: "Active only",
   closed: "Closed only",
 };
-
-/** Page numbers to show, with `null` standing for an ellipsis. */
-function pageItems(page: number, pageCount: number): (number | null)[] {
-  if (pageCount <= 7) return Array.from({ length: pageCount }, (_, i) => i + 1);
-
-  const pages = new Set([1, pageCount, page - 1, page, page + 1]);
-  if (page <= 3) [2, 3].forEach((p) => pages.add(p));
-  if (page >= pageCount - 2)
-    [pageCount - 1, pageCount - 2].forEach((p) => pages.add(p));
-
-  const sorted = [...pages]
-    .filter((p) => p >= 1 && p <= pageCount)
-    .sort((a, b) => a - b);
-  const items: (number | null)[] = [];
-  sorted.forEach((p, i) => {
-    if (i > 0 && p - sorted[i - 1] > 1) items.push(null);
-    items.push(p);
-  });
-  return items;
-}
 
 const filterLabelClass = "text-[13px] font-medium text-gray-700";
 const pageButtonBase =

@@ -1,16 +1,7 @@
 import { Transform } from 'class-transformer';
 import { ArrayMaxSize, ArrayMinSize, IsArray, IsEmail, IsNotEmpty, IsOptional, IsString, IsUUID, IsUrl, Length, MaxLength } from 'class-validator';
-
-const trim = ({ value }: { value: unknown }) =>
-  typeof value === 'string' ? value.trim() : value;
-
-const trimToUndefined = ({ value }: { value: unknown }) => {
-  if (typeof value !== 'string') return value;
-  const trimmed = value.trim();
-  return trimmed === '' ? undefined : trimmed;
-};
-
-const URL_OPTIONS = { protocols: ['http', 'https'], require_protocol: true };
+import { trim, trimToUndefined } from '../utils/transform.utils';
+import { HTTP_URL_OPTIONS } from '../utils/validation.utils';
 
 export class SubmitApplicationDto {
   @IsUUID('all', { message: 'jobId must be a valid UUID' })
@@ -45,7 +36,7 @@ export class SubmitApplicationDto {
 
   @IsOptional()
   @Transform(trimToUndefined)
-  @IsUrl(URL_OPTIONS, {
+  @IsUrl(HTTP_URL_OPTIONS, {
     message: 'LinkedIn profile must be a valid URL starting with http:// or https://',
   })
   @MaxLength(255, { message: 'LinkedIn profile must be at most 255 characters' })
@@ -53,7 +44,7 @@ export class SubmitApplicationDto {
 
   @IsOptional()
   @Transform(trimToUndefined)
-  @IsUrl(URL_OPTIONS, {
+  @IsUrl(HTTP_URL_OPTIONS, {
     message: 'Portfolio must be a valid URL starting with http:// or https://',
   })
   @MaxLength(255, { message: 'Portfolio must be at most 255 characters' })

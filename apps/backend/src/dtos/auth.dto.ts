@@ -1,5 +1,6 @@
 import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { trim } from '../utils/transform.utils';
 
 export class LoginDto {
   @IsEmail({}, { message: 'Please provide a valid email' })
@@ -11,9 +12,7 @@ export class LoginDto {
 }
 
 export class ForgotPasswordDto {
-  @Transform(({ value }: { value: unknown }) =>
-    typeof value === 'string' ? value.trim() : value,
-  )
+  @Transform(trim)
   @IsEmail({}, { message: 'Please provide a valid email address' })
   email!: string;
 }

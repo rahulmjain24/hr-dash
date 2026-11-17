@@ -4,8 +4,7 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { createHash, randomUUID } from 'crypto';
-import { extname } from 'path';
+import { randomUUID } from 'crypto';
 import type { Readable } from 'stream';
 import { BaseService } from './base.service';
 import { DocumentEntity, DocumentTypeEnum } from '../entities/document.entity';
@@ -15,6 +14,9 @@ import { ApplicationFormService } from './application-form.service';
 import { StorageService } from './storage.service';
 import { DocumentStatusEnum } from '../dtos/document.dto';
 import type { SubmitApplicationDto } from '../dtos/public-application.dto';
+import { sha256Hex } from '../utils/crypto.utils';
+import { getErrorMessage } from '../utils/error.utils';
+import { decodeUploadFilename, getFileExtension, hasMagicBytes } from '../utils/file.utils';
 
 export const MAX_DOCUMENT_SIZE_BYTES = 5 * 1024 * 1024;
 
@@ -100,7 +102,7 @@ export class DocumentService extends BaseService<DocumentEntity> {
         const originalFilename = decodeURIComponent(
           info?.metadata['original-filename'] ?? '',
         );
-        const extension = extname(originalFilename).toLowerCase();
+        const extension = getFileExtension(originalFilename);
         const documentType = info?.metadata['document-type'] as DocumentTypeEnum;
         if (
           !info ||
@@ -141,7 +143,7 @@ export class DocumentService extends BaseService<DocumentEntity> {
       }
     } catch (error) {
       this.logger.error(
-        `Attaching documents to application ${application.id} failed: ${(error as Error).message}`,
+        `Attaching documents to application ${application.id} failed: ${getErrorMessage(error)}`,
       );
       await Promise.all(movedKeys.map((key) => this.removeQuietly(bucket, key)));
       await this.applicationFormService.delete(application.id);
@@ -164,15 +166,10 @@ export class DocumentService extends BaseService<DocumentEntity> {
       throw new BadRequestException('File must be at most 5 MB');
     }
 
-    const originalFilename = Buffer.from(file.originalname, 'latin1')
-      .toString('utf8')
-      .slice(0, 255);
-    const extension = extname(originalFilename).toLowerCase();
+    const originalFilename = decodeUploadFilename(file.originalname);
+    const extension = getFileExtension(originalFilename);
     const format = ALLOWED_FORMATS[extension];
-    if (
-      !format ||
-      !file.buffer.subarray(0, format.magic.length).equals(format.magic)
-    ) {
+    if (!format || !hasMagicBytes(file.buffer, format.magic)) {
       throw new BadRequestException('Only PDF, DOC and DOCX files are accepted');
     }
 
@@ -180,15 +177,15 @@ export class DocumentService extends BaseService<DocumentEntity> {
       buffer: file.buffer,
       originalFilename,
       mimeType: format.mimeType,
-      checksum: createHash('sha256').update(file.buffer).digest('hex'),
+      checksum: sha256Hex(file.buffer),
     };
   }
 
   private async removeQuietly(bucket: string, objectKey: string): Promise<void> {
     await this.storageService
       .remove(bucket, objectKey)
-      .catch((error: Error) =>
-        this.logger.error(`Failed to remove ${bucket}/${objectKey}: ${error.message}`),
+      .catch((error: unknown) =>
+        this.logger.error(`Failed to remove ${bucket}/${objectKey}: ${getErrorMessage(error)}`),
       );
   }
 

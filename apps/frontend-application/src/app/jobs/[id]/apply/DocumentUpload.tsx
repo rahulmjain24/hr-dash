@@ -4,14 +4,10 @@ import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { uploadDocument, type DocumentType, type UploadedDocument } from './actions';
 import { FileIcon, XIcon } from '@/components/icons';
 import { Required, fieldClass, labelClass } from '@/components/ui';
+import { formatFileSize } from '@/lib/format';
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
 const ACCEPTED_EXTENSIONS = ['.pdf', '.doc', '.docx'];
-
-const formatSize = (bytes: number) =>
-  bytes < 1024 * 1024
-    ? `${Math.max(1, Math.round(bytes / 1024))} KB`
-    : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 
 function clientError(file: File): string | null {
   const name = file.name.toLowerCase();
@@ -114,7 +110,7 @@ export default function DocumentUpload({
               <input type="hidden" name={name} value={doc.uploadId} />
               <FileIcon size={16} className="flex-none text-gray-500" />
               <span className="min-w-0 flex-1 truncate text-gray-900">{doc.originalFilename}</span>
-              <span className="flex-none text-xs text-gray-500">{formatSize(doc.sizeBytes)}</span>
+              <span className="flex-none text-xs text-gray-500">{formatFileSize(doc.sizeBytes)}</span>
               <button
                 type="button"
                 aria-label={`Remove ${doc.originalFilename}`}
