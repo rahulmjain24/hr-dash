@@ -8,80 +8,6 @@ HR staff can review each application's documents, move it through the hiring sta
 
 ---
 
-## 📸 Screenshots
-
-### HR dashboard
-
-**Applications:** search and filter every application by status, job, department, listing state, and submission date, with server-side pagination.
-
-![Applications list with filters](docs/images/hr-dash-applications.png)
-
-**Application detail:** one page per application with the candidate's details, uploaded documents, scheduled meetings, the current status, and the full status history with who changed it and when.
-
-![Application detail page](docs/images/hr-dash-application-edit.png)
-
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <b>Job listings</b><br/>
-      Filter by department and active state, and jump to each listing's applications.<br/><br/>
-      <img src="docs/images/hr-dash-job-listings.png" alt="Job listings page" />
-    </td>
-    <td width="50%" valign="top">
-      <b>New job listing</b><br/>
-      Form validation, including end date after start date and a 10,000-character description limit.<br/><br/>
-      <img src="docs/images/hr-dash-job-listings-new.png" alt="New job listing form" />
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <b>Members</b><br/>
-      Admins manage who can sign in, with search and role filters.<br/><br/>
-      <img src="docs/images/hr-dash-members.png" alt="Members page" />
-    </td>
-    <td width="50%" valign="top">
-      <b>Create member</b><br/>
-      Role-based access: Members review applications, and Admins manage listings and people.<br/><br/>
-      <img src="docs/images/hr-dash-members-new.png" alt="Create member form" />
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <b>Edit member</b><br/>
-      Update profile and role, reset a password, or delete a member, with safeguards like not being able to delete your own account.<br/><br/>
-      <img src="docs/images/hr-dash-members-edit.png" alt="Edit member page" />
-    </td>
-    <td width="50%" valign="top">
-      <b>Sign in</b><br/>
-      JWT stored in an HTTP-only cookie, with a self-service password reset by email.<br/><br/>
-      <img src="docs/images/hr-dash-login.png" alt="Sign in page" />
-    </td>
-  </tr>
-</table>
-
-### Applicant portal
-
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <b>Open positions</b><br/>
-      Candidates browse active job listings grouped by department, without an account.<br/><br/>
-      <img src="docs/images/hr-dash-job-list.png" alt="Open positions page" />
-    </td>
-    <td width="50%" valign="top">
-      <b>Job posting</b><br/>
-      The full description with department, posting date, and application deadline.<br/><br/>
-      <img src="docs/images/hr-dash-job-post.png" alt="Job posting page" />
-    </td>
-  </tr>
-</table>
-
-**Apply:** the application form, with a required resume and up to 4 additional documents (PDF, DOC or DOCX, up to 5 MB each).
-
-![Application form](docs/images/hr-dash-apply.png)
-
----
-
 ## 💻 Tech Stack
 
 **Frontends** (`apps/frontend-hr`, `apps/frontend-application`)
@@ -103,6 +29,101 @@ HR staff can review each application's documents, move it through the hiring sta
 *   **Database:** ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white)
 *   **File Storage:** ![MinIO](https://img.shields.io/badge/MinIO-C7202C?style=flat-square&logo=minio&logoColor=white) (S3-compatible object storage for resumes and documents)
 *   **Containerization:** ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white) Compose for Postgres, MinIO, the backend, and both frontends
+
+---
+
+## 🏗️ System Architecture
+
+The system follows a client-server model with a monolithic backend.
+
+![Backend Architecture](docs/images/hr-dash-architecture.svg)
+
+### Components
+
+*   **Client Interfaces:**
+    *   **HR UI** (`apps/frontend-hr`): A secure internal dashboard where HR staff manage members, job postings, applications, documents, and interviews.
+    *   **Application UI** (`apps/frontend-application`): A public frontend where candidates browse open job listings and submit applications with their documents.
+*   **Backend (Monolithic):**
+    *   **Auth Module:** Handles login, logout, and password reset, and secures access from the HR UI.
+    *   **HR APIs:** Protected endpoints for administrative tasks such as managing users, departments, job listings, application statuses, documents, and interviews.
+    *   **Application APIs:** Public endpoints under `/public` for the Application UI: fetching open jobs, uploading documents, and submitting applications.
+*   **Infrastructure:**
+    *   **Database:** PostgreSQL, storing all structured data.
+    *   **File Storage:** MinIO, for applicant documents such as resumes, cover letters, and portfolios.
+
+---
+
+## 📁 Project Structure
+
+```text
+hr-dash/
+├── apps/
+│   ├── backend/          # NestJS API
+│   │   ├── src/
+│   │   │   ├── controllers/   # HTTP layer (extends BaseController)
+│   │   │   ├── services/      # Business logic (extends BaseService)
+│   │   │   ├── repositories/  # Data access (extends BaseRepository)
+│   │   │   ├── entities/      # MikroORM entities (extends BaseUUIDEntity)
+│   │   │   ├── dtos/          # Request validation (class-validator)
+│   │   │   ├── guards/        # JWT and role guards
+│   │   │   ├── modules/       # NestJS modules
+│   │   │   └── migrations/    # MikroORM migrations
+│   │   └── mikro-orm.config.ts
+│   ├── frontend-hr/           # Next.js HR dashboard
+│   └── frontend-application/  # Next.js public applicant portal
+├── docs/images/          # Architecture, request flow, and DB diagrams
+├── docker-compose.yml    # Postgres, MinIO, backend, and both frontends
+└── .env.example
+```
+
+### Root scripts
+
+| Script | What it does |
+|---|---|
+| `npm run dev:backend` | Start the backend in watch mode |
+| `npm run dev:frontend-hr` | Start the HR dashboard dev server |
+| `npm run dev:frontend-application` | Start the applicant portal dev server on port 3002 |
+| `npm run db:migrate` | Apply pending migrations manually (the backend also does this on startup) |
+| `npm run db:generate` | Generate a migration from entity changes |
+| `npm run db:blank` | Create an empty migration |
+| `npm run db:down` | Roll back the last migration |
+
+---
+
+## ⚙️ Backend Request Flow
+
+The backend uses a layered architecture to keep concerns separated, as shown in the request flow diagram below.
+
+![Design Pattern](docs/images/hr-dash-design-pattern.svg)
+
+### Request Lifecycle
+
+1.  **API Routing:** NestJS routes the incoming request to a controller endpoint.
+2.  **Guards:** `JwtAuthGuard` authenticates the request from the auth cookie, and `RolesGuard` enforces the `@Roles(...)` requirement.
+3.  **Request Validation:** DTOs validated with `class-validator` reject payloads that don't match the expected schema.
+4.  **Controller:** Handles the HTTP request and response and delegates to the service layer. Extends `BaseController`.
+5.  **Service:** Contains the business logic. Extends `BaseService`.
+6.  **Repository:** Handles data access and abstracts database queries. Extends `BaseRepository`.
+7.  **Entity:** MikroORM entity defining the table schema. Extends `BaseUUIDEntity` (UUID primary key, `created_at`, `updated_at`).
+
+---
+
+## 🗄️ Database Schema
+
+The schema is designed to track the full lifecycle of an application, as shown in the entity-relationship diagram below.
+
+![Database Design](docs/images/hr-dash-dbml.svg)
+
+### Tables
+
+*   **`tbl_users`**: System users (HR staff, admins) with a role (`ADMIN` or `MEMBER`) and a bcrypt-hashed password.
+*   **`tbl_departments`**: Organizational departments.
+*   **`tbl_job_listings`**: Job postings with active dates, department, and description.
+*   **`tbl_application_forms`**: The central table linking candidates to jobs. Tracks the current status and stores custom form fields as JSONB.
+*   **`tbl_password_reset_tokens`**: Single-use, expiring password reset tokens linked to a user.
+*   **`tbl_application_status_history`**: An audit log of every status change, recording who made the change and when.
+*   **`tbl_documents`**: Metadata and links to files in MinIO (such as resumes), tied to an `application_id`.
+*   **`tbl_interviews`**: Scheduled interviews linking applications to interviewers, with duration and meeting link.
 
 ---
 
@@ -242,64 +263,6 @@ All variables live in a single `.env` file at the repo root. The backend validat
 
 ---
 
-## 📁 Project Structure
-
-```text
-hr-dash/
-├── apps/
-│   ├── backend/          # NestJS API
-│   │   ├── src/
-│   │   │   ├── controllers/   # HTTP layer (extends BaseController)
-│   │   │   ├── services/      # Business logic (extends BaseService)
-│   │   │   ├── repositories/  # Data access (extends BaseRepository)
-│   │   │   ├── entities/      # MikroORM entities (extends BaseUUIDEntity)
-│   │   │   ├── dtos/          # Request validation (class-validator)
-│   │   │   ├── guards/        # JWT and role guards
-│   │   │   ├── modules/       # NestJS modules
-│   │   │   └── migrations/    # MikroORM migrations
-│   │   └── mikro-orm.config.ts
-│   ├── frontend-hr/           # Next.js HR dashboard
-│   └── frontend-application/  # Next.js public applicant portal
-├── docs/images/          # Architecture, request flow, and DB diagrams
-├── docker-compose.yml    # Postgres, MinIO, backend, and both frontends
-└── .env.example
-```
-
-### Root scripts
-
-| Script | What it does |
-|---|---|
-| `npm run dev:backend` | Start the backend in watch mode |
-| `npm run dev:frontend-hr` | Start the HR dashboard dev server |
-| `npm run dev:frontend-application` | Start the applicant portal dev server on port 3002 |
-| `npm run db:migrate` | Apply pending migrations manually (the backend also does this on startup) |
-| `npm run db:generate` | Generate a migration from entity changes |
-| `npm run db:blank` | Create an empty migration |
-| `npm run db:down` | Roll back the last migration |
-
----
-
-## 🏗️ System Architecture
-
-The system follows a client-server model with a monolithic backend.
-
-![Backend Architecture](docs/images/hr-dash-architecture.svg)
-
-### Components
-
-*   **Client Interfaces:**
-    *   **HR UI** (`apps/frontend-hr`): A secure internal dashboard where HR staff manage members, job postings, applications, documents, and interviews.
-    *   **Application UI** (`apps/frontend-application`): A public frontend where candidates browse open job listings and submit applications with their documents.
-*   **Backend (Monolithic):**
-    *   **Auth Module:** Handles login, logout, and password reset, and secures access from the HR UI.
-    *   **HR APIs:** Protected endpoints for administrative tasks such as managing users, departments, job listings, application statuses, documents, and interviews.
-    *   **Application APIs:** Public endpoints under `/public` for the Application UI: fetching open jobs, uploading documents, and submitting applications.
-*   **Infrastructure:**
-    *   **Database:** PostgreSQL, storing all structured data.
-    *   **File Storage:** MinIO, for applicant documents such as resumes, cover letters, and portfolios.
-
----
-
 ## 🔌 API Overview
 
 All routes except `/auth/*` and `/public/*` require a valid auth cookie. Routes marked **Admin** also require the `ADMIN` role.
@@ -318,40 +281,77 @@ All routes except `/auth/*` and `/public/*` require a valid auth cookie. Routes 
 
 ---
 
-## ⚙️ Backend Request Flow
+## 📸 Screenshots
 
-The backend uses a layered architecture to keep concerns separated, as shown in the request flow diagram below.
+### HR dashboard
 
-![Design Pattern](docs/images/hr-dash-design-pattern.svg)
+**Applications:** search and filter every application by status, job, department, listing state, and submission date, with server-side pagination.
 
-### Request Lifecycle
+![Applications list with filters](docs/images/hr-dash-applications.png)
 
-1.  **API Routing:** NestJS routes the incoming request to a controller endpoint.
-2.  **Guards:** `JwtAuthGuard` authenticates the request from the auth cookie, and `RolesGuard` enforces the `@Roles(...)` requirement.
-3.  **Request Validation:** DTOs validated with `class-validator` reject payloads that don't match the expected schema.
-4.  **Controller:** Handles the HTTP request and response and delegates to the service layer. Extends `BaseController`.
-5.  **Service:** Contains the business logic. Extends `BaseService`.
-6.  **Repository:** Handles data access and abstracts database queries. Extends `BaseRepository`.
-7.  **Entity:** MikroORM entity defining the table schema. Extends `BaseUUIDEntity` (UUID primary key, `created_at`, `updated_at`).
+**Application detail:** one page per application with the candidate's details, uploaded documents, scheduled meetings, the current status, and the full status history with who changed it and when.
 
----
+![Application detail page](docs/images/hr-dash-application-edit.png)
 
-## 🗄️ Database Schema
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <b>Job listings</b><br/>
+      Filter by department and active state, and jump to each listing's applications.<br/><br/>
+      <img src="docs/images/hr-dash-job-listings.png" alt="Job listings page" />
+    </td>
+    <td width="50%" valign="top">
+      <b>New job listing</b><br/>
+      Form validation, including end date after start date and a 10,000-character description limit.<br/><br/>
+      <img src="docs/images/hr-dash-job-listings-new.png" alt="New job listing form" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <b>Members</b><br/>
+      Admins manage who can sign in, with search and role filters.<br/><br/>
+      <img src="docs/images/hr-dash-members.png" alt="Members page" />
+    </td>
+    <td width="50%" valign="top">
+      <b>Create member</b><br/>
+      Role-based access: Members review applications, and Admins manage listings and people.<br/><br/>
+      <img src="docs/images/hr-dash-members-new.png" alt="Create member form" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <b>Edit member</b><br/>
+      Update profile and role, reset a password, or delete a member, with safeguards like not being able to delete your own account.<br/><br/>
+      <img src="docs/images/hr-dash-members-edit.png" alt="Edit member page" />
+    </td>
+    <td width="50%" valign="top">
+      <b>Sign in</b><br/>
+      JWT stored in an HTTP-only cookie, with a self-service password reset by email.<br/><br/>
+      <img src="docs/images/hr-dash-login.png" alt="Sign in page" />
+    </td>
+  </tr>
+</table>
 
-The schema is designed to track the full lifecycle of an application, as shown in the entity-relationship diagram below.
+### Applicant portal
 
-![Database Design](docs/images/hr-dash-dbml.svg)
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <b>Open positions</b><br/>
+      Candidates browse active job listings grouped by department, without an account.<br/><br/>
+      <img src="docs/images/hr-dash-job-list.png" alt="Open positions page" />
+    </td>
+    <td width="50%" valign="top">
+      <b>Job posting</b><br/>
+      The full description with department, posting date, and application deadline.<br/><br/>
+      <img src="docs/images/hr-dash-job-post.png" alt="Job posting page" />
+    </td>
+  </tr>
+</table>
 
-### Tables
+**Apply:** the application form, with a required resume and up to 4 additional documents (PDF, DOC or DOCX, up to 5 MB each).
 
-*   **`tbl_users`**: System users (HR staff, admins) with a role (`ADMIN` or `MEMBER`) and a bcrypt-hashed password.
-*   **`tbl_departments`**: Organizational departments.
-*   **`tbl_job_listings`**: Job postings with active dates, department, and description.
-*   **`tbl_application_forms`**: The central table linking candidates to jobs. Tracks the current status and stores custom form fields as JSONB.
-*   **`tbl_password_reset_tokens`**: Single-use, expiring password reset tokens linked to a user.
-*   **`tbl_application_status_history`**: An audit log of every status change, recording who made the change and when.
-*   **`tbl_documents`**: Metadata and links to files in MinIO (such as resumes), tied to an `application_id`.
-*   **`tbl_interviews`**: Scheduled interviews linking applications to interviewers, with duration and meeting link.
+![Application form](docs/images/hr-dash-apply.png)
 
 ---
 
